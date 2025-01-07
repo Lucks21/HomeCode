@@ -2,7 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const connectDB = require('./config/database');
+const connectDB = require('./config/configDB');
 
 // Cargar variables de entorno
 dotenv.config();
@@ -24,7 +24,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Rutas
-app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/users', require('./routes/user.routes'));
 
 // Iniciar el servidor
 app.listen(PORT, () => {
