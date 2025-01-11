@@ -1,84 +1,74 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
-import API from "../services/api";
+import React from "react";
+import { View, Text, StyleSheet, Image } from "react-native";
 
 const DetalleLibro = ({ route }) => {
-  const { libroId } = route.params;
-  const [libro, setLibro] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchLibro = async () => {
-      try {
-        const response = await API.get(`/libros/${libroId}`);
-        setLibro(response.data.data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error al cargar el libro:", error.message);
-        setLoading(false);
-      }
-    };
-
-    fetchLibro();
-  }, [libroId]);
-
-  if (loading) {
-    return (
-      <View style={styles.loading}>
-        <Text>Cargando libro...</Text>
-      </View>
-    );
-  }
-
-  if (!libro) {
-    return (
-      <View style={styles.error}>
-        <Text>No se pudo cargar el libro</Text>
-      </View>
-    );
-  }
+  const { libro } = route.params; // Recibir los datos del libro
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: libro.portada || "https://via.placeholder.com/200" }} style={styles.portada} />
-      <Text style={styles.title}>{libro.titulo}</Text>
-      <Text style={styles.author}>Autor: {libro.autor}</Text>
-      <Text style={styles.details}>Editorial: {libro.editorial}</Text>
-      <Text style={styles.details}>Páginas: {libro.paginas}</Text>
-      <Text style={styles.details}>Idioma: {libro.idioma}</Text>
-      <Text style={styles.details}>Tipo: {libro.tipo}</Text>
+      <Image source={{ uri: libro.portada || "https://via.placeholder.com/150" }} style={styles.portada} />
+      <Text style={styles.titulo}>{libro.titulo}</Text>
+      <Text style={styles.autor}>Autor: {libro.autor}</Text>
+      <Text style={styles.editorial}>Editorial: {libro.editorial}</Text>
+      <Text style={styles.paginas}>Páginas: {libro.paginas}</Text>
+      <Text style={styles.idioma}>Idioma: {libro.idioma}</Text>
+      <Text style={styles.tipo}>Tipo: {libro.tipo}</Text>
+      <Text style={styles.isbn}>ISBN: {libro.isbn}</Text>
+      <Text style={styles.formato}>Formato: {libro.formato}</Text>
+      <Text style={styles.generos}>
+        Géneros: {libro.generos.map((genero) => genero.name).join(", ")}
+      </Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    padding: 20,
   },
   portada: {
-    width: "100%",
+    width: 150,
     height: 200,
-    marginBottom: 10,
+    alignSelf: "center",
+    marginBottom: 20,
   },
   titulo: {
     fontSize: 20,
     fontWeight: "bold",
-  },
-  autor: {
+    textAlign: "center",
     marginBottom: 10,
   },
-  detalles: {
+  autor: {
+    fontSize: 16,
     marginBottom: 5,
   },
-  loading: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  editorial: {
+    fontSize: 16,
+    marginBottom: 5,
   },
-  error: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  paginas: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  idioma: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  tipo: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  isbn: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  generos: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  formato: {
+    fontSize: 16,
+    marginBottom: 5,
   },
 });
 

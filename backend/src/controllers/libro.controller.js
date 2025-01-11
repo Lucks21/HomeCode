@@ -2,11 +2,6 @@
 import libroServices from "../services/libro.services.js";
 import { respondSuccess, respondError } from "../utils/resHandler.js";
 
-/**
- * Controlador para obtener todos los libros.
- * @param {Object} req - Objeto de petición.
- * @param {Object} res - Objeto de respuesta.
- */
 async function getLibros(req, res) {
   try {
     const [libros, error] = await libroServices.getLibros();
@@ -18,16 +13,12 @@ async function getLibros(req, res) {
   }
 }
 
-/**
- * Controlador para crear un nuevo libro.
- * @param {Object} req - Objeto de petición.
- * @param {Object} res - Objeto de respuesta.
- */
 async function createLibro(req, res) {
   try {
     const { body } = req;
     const portada = req.file ? req.file.path : null; // Ruta de la portada si se subió una imagen
 
+    // Llamada al servicio para crear el libro
     const [nuevoLibro, error] = await libroServices.createLibro({
       ...body,
       portada,
@@ -40,29 +31,25 @@ async function createLibro(req, res) {
   }
 }
 
-/**
- * Controlador para obtener un libro por ID.
- * @param {Object} req - Objeto de petición.
- * @param {Object} res - Objeto de respuesta.
- */
 async function getLibroById(req, res) {
   try {
     const { id } = req.params;
 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return respondError(req, res, 400, "ID inválido");
+    }
+
     const [libro, error] = await libroServices.getLibroById(id);
 
-    if (error) return respondError(req, res, 404, error);
-    respondSuccess(req, res, 200, libro);
+    if (error) {
+      return respondError(req, res, 404, error);
+    }
+    return respondSuccess(req, res, 200, libro);
   } catch (error) {
-    respondError(req, res, 500, "Error al obtener el libro", error.message);
+    return respondError(req, res, 500, "Error al obtener el libro", error.message);
   }
 }
 
-/**
- * Controlador para eliminar un libro por ID.
- * @param {Object} req - Objeto de petición.
- * @param {Object} res - Objeto de respuesta.
- */
 async function deleteLibro(req, res) {
   try {
     const { id } = req.params;

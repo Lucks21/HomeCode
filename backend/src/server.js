@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import { setupDB } from './config/configDB.js'; 
 import userRoutes from './routes/user.routes.js';
+import indexRoutes from "./routes/index.routes.js";
 
 // Cargar variables de entorno
 dotenv.config();
@@ -26,8 +27,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Rutas
-app.use('/api/users', userRoutes);
-
+app.use("/api", indexRoutes);
 // Iniciar el servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://${HOST}:${PORT}`);

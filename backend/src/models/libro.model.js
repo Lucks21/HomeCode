@@ -20,11 +20,11 @@ const libroSchema = new mongoose.Schema(
       required: [true, "El número de páginas es obligatorio"],
       min: [1, "El libro debe tener al menos una página"],
     },
-    genero: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Genero",
-      required: [true, "El género es obligatorio"],
-    },
+    generos: [
+      { type: mongoose.Schema.Types.ObjectId, 
+        ref: "Genero", 
+        required: true }
+    ],
     isbn: {
       type: String,
       unique: true,

@@ -7,11 +7,10 @@ const generoSchema = new mongoose.Schema(
       type: String,
       required: [true, "El nombre del género es obligatorio"],
       unique: true,
-      enum: ["Fantasía", "Ciencia Ficción", "Misterio", "Romance", "Terror"], // Lista predefinida de géneros
     },
   },
   {
-    timestamps: false, // Agrega campos createdAt y updatedAt automáticamente
+    timestamps: false, 
     versionKey: false,
   }
 );

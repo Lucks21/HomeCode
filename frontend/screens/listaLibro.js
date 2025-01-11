@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, Image } from "react-native";
-import API from "../services/api";
+import { View, Text, FlatList, StyleSheet, Image ,TouchableOpacity } from "react-native";
+import API from "../services/API";
 
-const listaLibro = () => {
+const ListaLibro = ({ navigation }) => {
   const [libros, setLibros] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -10,6 +10,7 @@ const listaLibro = () => {
     const fetchLibros = async () => {
       try {
         const response = await API.get("/libros"); // Llama al endpoint de tu backend
+        console.log("Datos recibidos:", response.data); // Agrega esto para verificar la respuesta
         setLibros(response.data.data);
         setLoading(false);
       } catch (error) {
@@ -17,18 +18,24 @@ const listaLibro = () => {
         setLoading(false);
       }
     };
-
+  
     fetchLibros();
   }, []);
 
   const renderLibro = ({ item }) => (
-    <View style={styles.bookContainer}>
-      <Image source={{ uri: item.portada || "https://via.placeholder.com/100" }} style={styles.portada} />
+    <TouchableOpacity
+      onPress={() => navigation.navigate("Detalle del Libro", { libro: item })}
+      style={styles.libroContainer}
+    >
+      <Image
+        source={{ uri: item.portada || "https://via.placeholder.com/100" }}
+        style={styles.portada}
+      />
       <View>
-        <Text style={styles.title}>{item.titulo}</Text>
-        <Text style={styles.author}>{item.autor}</Text>
+        <Text style={styles.titulo}>{item.titulo}</Text>
+        <Text style={styles.autor}>{item.autor}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   if (loading) {
@@ -79,4 +86,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default listaLibro;
+export default ListaLibro;
