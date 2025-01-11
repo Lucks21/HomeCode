@@ -1,26 +1,21 @@
 "use strict";
-// Importa el modulo 'mongoose' para crear la conexion a la base de datos
-import { connect } from "mongoose";
 
-// Agregamos la configuracion de las variables de entorno
+import mongoose from "mongoose";
 import { DB_URL } from "./configEnv.js";
 import { handleError } from "../utils/errorHandler.js";
 
-/**
- * Establece la conexión con la base de datos.
- * @async
- * @function setupDB
- * @throws {Error} Si no se puede conectar a la base de datos.
- * @returns {Promise<void>} Una promesa que se resuelve cuando se establece la conexión con la base de datos.
- */
-
-async function setupDB() {
+export async function setupDB() {
   try {
-    await connect(DB_URL);
-    console.log("=> Conectado a la base de datos");
-  } catch (err) {
-    handleError(err, "/configDB.js -> setupDB");
+    if (!DB_URL) {
+      throw new Error("La URI de conexión a MongoDB (DB_URL) no está definida");
+    }
+
+    // Conectar a la base de datos (sin las opciones deprecated)
+    await mongoose.connect(DB_URL);
+    console.log("✅ => Conectado a la base de datos");
+  } catch (error) {
+    handleError(error, "configDB.js -> setupDB");
+    console.error("❌ => Error al conectar a la base de datos:", error.message);
+    process.exit(1);
   }
 }
-
-export { setupDB };

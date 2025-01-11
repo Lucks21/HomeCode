@@ -1,5 +1,5 @@
 "use strict";
-// Importa el modulo 'express' para crear las rutas
+// Importa el módulo 'express' para crear las rutas
 import { Router } from "express";
 
 /** Controlador de usuarios */
@@ -16,6 +16,7 @@ const router = Router();
 
 // Define el middleware de autenticación para todas las rutas
 router.use(authenticationMiddleware);
+
 // Define las rutas para los usuarios
 router.get("/", isAdmin, usuarioController.getUsers);
 router.post("/", isAdmin, usuarioController.createUser);

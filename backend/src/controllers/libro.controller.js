@@ -1,5 +1,5 @@
 "use strict";
-import libroServices from "../services/libro.service.js";
+import libroServices from "../services/libro.services.js";
 import { respondSuccess, respondError } from "../utils/resHandler.js";
 
 /**
