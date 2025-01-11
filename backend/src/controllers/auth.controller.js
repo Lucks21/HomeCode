@@ -4,7 +4,7 @@ import { respondSuccess, respondError } from "../utils/resHandler.js";
 import { handleError } from "../utils/errorHandler.js";
 
 /** Servicios de autenticación */
-import AuthService from "../services/auth.service.js";
+import AuthService from "../services/auth.services.js";
 import { authLoginBodySchema } from "../schema/auth.schema.js";
 
 /**
