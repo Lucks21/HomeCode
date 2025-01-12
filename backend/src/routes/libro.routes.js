@@ -10,5 +10,6 @@ router.get("/", libroController.getLibros);
 router.post("/", upload.single("portada"), libroController.createLibro);
 router.get("/:id", libroController.getLibroById);
 router.delete("/:id", libroController.deleteLibro);
+router.get("/search/:term", libroController.searchLibros);
 
 export default router;

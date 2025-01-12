@@ -1,4 +1,5 @@
 "use strict";
+import mongoose from "mongoose";
 import libroServices from "../services/libro.services.js";
 import { respondSuccess, respondError } from "../utils/resHandler.js";
 
@@ -63,9 +64,23 @@ async function deleteLibro(req, res) {
   }
 }
 
+async function searchLibros(req, res) {
+  try {
+    const { term } = req.params; // Obtenemos el término de búsqueda desde los parámetros
+
+    const [libros, error] = await libroServices.searchLibros(term);
+
+    if (error) return respondError(req, res, 404, error);
+    respondSuccess(req, res, 200, libros);
+  } catch (error) {
+    respondError(req, res, 500, "Error al buscar libros", error.message);
+  }
+}
+
 export default {
   getLibros,
   createLibro,
   getLibroById,
   deleteLibro,
+  searchLibros,
 };

@@ -1,4 +1,5 @@
 "use strict";
+import mongoose from "mongoose";
 import Libro from "../models/libro.model.js";
 import Saga from "../models/saga.model.js";
 import Genero from "../models/genero.model.js";
@@ -54,7 +55,7 @@ async function createLibro(libroData) {
 async function getLibroById(id) {
   try {
     const libro = await Libro.findById(id)
-      .populate("genero", "name")
+      .populate("generos", "name")
       .populate("saga", "name")
       .exec();
 
@@ -86,9 +87,26 @@ async function deleteLibro(id) {
   }
 }
 
+async function searchLibros(term) {
+  try {
+    const libros = await Libro.find({
+      titulo: { $regex: term, $options: "i" } // Búsqueda insensible a mayúsculas/minúsculas
+    })
+      .populate("generos", "name")
+      .populate("saga", "name")
+      .exec();
+
+    if (libros.length === 0) return [null, "No se encontraron libros con ese término"];
+    return [libros, null];
+  } catch (error) {
+    return [null, error.message];
+  }
+}
+
 export default {
   getLibros,
   createLibro,
   getLibroById,
   deleteLibro,
+  searchLibros,
 };
