@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, Image ,TouchableOpacity } from "react-native";
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Button } from "react-native";
 import API from "../services/API";
 
 const ListaLibro = ({ navigation }) => {
@@ -18,7 +18,7 @@ const ListaLibro = ({ navigation }) => {
         setLoading(false);
       }
     };
-  
+
     fetchLibros();
   }, []);
 
@@ -47,18 +47,29 @@ const ListaLibro = ({ navigation }) => {
   }
 
   return (
-    <FlatList
-      data={libros}
-      keyExtractor={(item) => item._id}
-      renderItem={renderLibro}
-      contentContainerStyle={styles.list}
-    />
+    <View style={styles.container}>
+      {/* Botón para crear un nuevo libro */}
+      <Button
+        title="Crear Nuevo Libro"
+        onPress={() => navigation.navigate("Crear Libro")} // Navega a la pantalla de crear libro
+      />
+      <FlatList
+        data={libros}
+        keyExtractor={(item) => item._id}
+        renderItem={renderLibro}
+        contentContainerStyle={styles.list}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  list: {
+  container: {
+    flex: 1,
     padding: 10,
+  },
+  list: {
+    marginTop: 10,
   },
   libroContainer: {
     flexDirection: "row",
