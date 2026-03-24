@@ -77,9 +77,9 @@ export function DebtPaymentModal({
 
         <div className="px-6 pt-4">
           {debt && (
-            <div className="p-3 bg-muted rounded-md mb-4">
-              <p className="text-sm text-muted-foreground">Deuda: {debt.description}</p>
-              <p className="text-sm font-bold">
+            <div style={{ padding: 12, background: '#0b0f19', borderRadius: 8, marginBottom: 16, border: '1px solid #1e293b' }}>
+              <p style={{ fontSize: 14, color: '#94a3b8', margin: 0 }}>Deuda: {debt.description}</p>
+              <p style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9', margin: 0, marginTop: 4 }}>
                 Pendiente: {formatCLP(debt.remainingAmount)}
               </p>
             </div>
@@ -126,7 +126,7 @@ export function DebtPaymentModal({
             />
 
             {/* Botones */}
-            <div className="flex justify-end gap-2 pt-4 border-t">
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, paddingTop: 16, borderTop: '1px solid #1e293b' }}>
               <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
                 Cancelar
               </Button>

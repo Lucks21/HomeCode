@@ -2,17 +2,6 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { getErrorMessage } from '@/shared/utils';
-import { ModulePageHeader } from '@/shared/presentation/components/ModulePageHeader';
-import { Button } from '@/shared/presentation/components/ui/Button';
-import { FiltersBar } from '@/shared/presentation/components/ui/FiltersBar';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/presentation/components/ui/Select';
-import { Input } from '@/shared/presentation/components/ui/Input';
 import { DebtsTable } from '../components/DebtsTable';
 import { DebtFormModal } from '../components/DebtFormModal';
 import { DebtPaymentModal } from '../components/DebtPaymentModal';
@@ -44,7 +33,6 @@ export function DebtsView() {
     debts,
     isLoading,
     error,
-    fetchDebts,
     createDebt,
     registerPayment,
     archiveDebt,
@@ -135,20 +123,46 @@ export function DebtsView() {
   if (detailDebtId && debtDetail) {
     return (
       <>
-        <div className="flex items-center gap-4 mb-4">
-          <Button variant="outline" onClick={handleCloseDetail}>
-            Volver
-          </Button>
-          <h1 className="text-2xl font-bold">Detalle de Deuda</h1>
+        <div style={{ marginBottom: 24 }}>
+          <button
+            onClick={handleCloseDetail}
+            style={{
+              background: 'transparent',
+              border: '1px solid #1e293b',
+              color: '#94a3b8',
+              borderRadius: 8,
+              padding: '8px 20px',
+              fontSize: 14,
+              cursor: 'pointer',
+              marginBottom: 16,
+            }}
+          >
+            ← Volver
+          </button>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: '#ffffff', margin: 0 }}>
+            Detalle de Deuda
+          </h1>
         </div>
 
         <DebtDetailCard debt={debtDetail} />
 
         {debtDetail.status !== 'PAID' && (
-          <div className="mt-4">
-            <Button onClick={() => handleRegisterPayment(debtDetail)}>
+          <div style={{ marginTop: 16 }}>
+            <button
+              onClick={() => handleRegisterPayment(debtDetail)}
+              style={{
+                border: '1px solid #10b981',
+                color: '#10b981',
+                background: 'transparent',
+                borderRadius: 8,
+                padding: '10px 24px',
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
               Registrar Pago
-            </Button>
+            </button>
           </div>
         )}
 
@@ -165,100 +179,217 @@ export function DebtsView() {
 
   return (
     <>
-      <ModulePageHeader
-        title="Deudas"
-        description="Gestiona tus deudas y registra pagos"
-        actions={
-          <Button onClick={handleCreate}>
-            + Nueva Deuda
-          </Button>
-        }
-      />
-
-      <div className="mt-4">
-        <FiltersBar hasActiveFilters={hasActiveFilters} onClearFilters={handleClearFilters}>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <Select
-                value={filters.accountId?.toString() ?? 'TODOS'}
-                onValueChange={(value) =>
-                  setFilters({ ...filters, accountId: value === 'TODOS' ? null : parseInt(value) })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Cuenta" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="TODOS">Todas las cuentas</SelectItem>
-                  {accounts.map((account) => (
-                    <SelectItem key={account.id} value={account.id.toString()}>
-                      {account.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Select
-                value={filters.status}
-                onValueChange={(value) =>
-                  setFilters({
-                    ...filters,
-                    status: value as 'TODOS' | 'PENDING' | 'PARTIAL' | 'PAID',
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Estado" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="TODOS">Todos</SelectItem>
-                  <SelectItem value="PENDING">Pendiente</SelectItem>
-                  <SelectItem value="PARTIAL">Parcial</SelectItem>
-                  <SelectItem value="PAID">Pagada</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Input
-                type="date"
-                value={filters.dateFrom}
-                onChange={(e) =>
-                  setFilters({ ...filters, dateFrom: (e.target as HTMLInputElement).value })
-                }
-              />
-            </div>
-
-            <div>
-              <Input
-                type="date"
-                value={filters.dateTo}
-                onChange={(e) =>
-                  setFilters({ ...filters, dateTo: (e.target as HTMLInputElement).value })
-                }
-              />
-            </div>
-          </div>
-        </FiltersBar>
+      {/* Header */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 24,
+        }}
+      >
+        <div>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: '#ffffff', margin: 0 }}>
+            Deudas
+          </h1>
+          <p style={{ color: '#64748b', fontSize: 14, marginTop: 4 }}>
+            Gestiona tus deudas y registra pagos
+          </p>
+        </div>
+        <button
+          onClick={handleCreate}
+          style={{
+            background: '#10b981',
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: 10,
+            padding: '10px 24px',
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'background 0.2s ease',
+          }}
+          onMouseEnter={(e) => {
+            (e.target as HTMLButtonElement).style.background = '#059669';
+          }}
+          onMouseLeave={(e) => {
+            (e.target as HTMLButtonElement).style.background = '#10b981';
+          }}
+        >
+          + Nueva Deuda
+        </button>
       </div>
 
+      {/* Filters */}
+      <div
+        style={{
+          background: '#111827',
+          border: '1px solid #1e293b',
+          borderRadius: 12,
+          padding: 16,
+          marginBottom: 20,
+        }}
+      >
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: 12,
+            alignItems: 'end',
+          }}
+        >
+          {/* Account filter */}
+          <div>
+            <label style={{ color: '#94a3b8', fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 6 }}>
+              Cuenta
+            </label>
+            <select
+              value={filters.accountId?.toString() ?? 'TODOS'}
+              onChange={(e) =>
+                setFilters({ ...filters, accountId: e.target.value === 'TODOS' ? null : parseInt(e.target.value) })
+              }
+              style={{
+                width: '100%',
+                background: '#0b0f19',
+                border: '1px solid #1e293b',
+                borderRadius: 8,
+                padding: '8px 12px',
+                color: '#ffffff',
+                fontSize: 14,
+                outline: 'none',
+              }}
+            >
+              <option value="TODOS">Todas las cuentas</option>
+              {accounts.map((account) => (
+                <option key={account.id} value={account.id.toString()}>
+                  {account.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Status filter */}
+          <div>
+            <label style={{ color: '#94a3b8', fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 6 }}>
+              Estado
+            </label>
+            <select
+              value={filters.status}
+              onChange={(e) =>
+                setFilters({
+                  ...filters,
+                  status: e.target.value as 'TODOS' | 'PENDING' | 'PARTIAL' | 'PAID',
+                })
+              }
+              style={{
+                width: '100%',
+                background: '#0b0f19',
+                border: '1px solid #1e293b',
+                borderRadius: 8,
+                padding: '8px 12px',
+                color: '#ffffff',
+                fontSize: 14,
+                outline: 'none',
+              }}
+            >
+              <option value="TODOS">Todos</option>
+              <option value="PENDING">Pendiente</option>
+              <option value="PARTIAL">Parcial</option>
+              <option value="PAID">Pagada</option>
+            </select>
+          </div>
+
+          {/* Date from */}
+          <div>
+            <label style={{ color: '#94a3b8', fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 6 }}>
+              Desde
+            </label>
+            <input
+              type="date"
+              value={filters.dateFrom}
+              onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
+              style={{
+                width: '100%',
+                background: '#0b0f19',
+                border: '1px solid #1e293b',
+                borderRadius: 8,
+                padding: '8px 12px',
+                color: '#ffffff',
+                fontSize: 14,
+                outline: 'none',
+                colorScheme: 'dark',
+              }}
+            />
+          </div>
+
+          {/* Date to */}
+          <div>
+            <label style={{ color: '#94a3b8', fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 6 }}>
+              Hasta
+            </label>
+            <input
+              type="date"
+              value={filters.dateTo}
+              onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
+              style={{
+                width: '100%',
+                background: '#0b0f19',
+                border: '1px solid #1e293b',
+                borderRadius: 8,
+                padding: '8px 12px',
+                color: '#ffffff',
+                fontSize: 14,
+                outline: 'none',
+                colorScheme: 'dark',
+              }}
+            />
+          </div>
+        </div>
+
+        {hasActiveFilters && (
+          <div style={{ marginTop: 12, textAlign: 'right' }}>
+            <button
+              onClick={handleClearFilters}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#64748b',
+                fontSize: 13,
+                cursor: 'pointer',
+                textDecoration: 'underline',
+              }}
+            >
+              Limpiar filtros
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Error */}
       {error && (
-        <div className="mt-4 p-4 border-2 border-destructive bg-destructive/10 text-destructive">
-          <p className="font-bold">Error:</p>
-          <p>{error}</p>
+        <div
+          style={{
+            marginBottom: 20,
+            padding: 16,
+            background: 'rgba(239,68,68,0.1)',
+            border: '1px solid rgba(239,68,68,0.3)',
+            borderRadius: 12,
+            color: '#ef4444',
+          }}
+        >
+          <p style={{ fontWeight: 700, marginBottom: 4 }}>Error:</p>
+          <p style={{ margin: 0 }}>{error}</p>
         </div>
       )}
 
-      <div className="mt-4">
-        <DebtsTable
-          debts={filteredDebts}
-          onViewDetail={handleViewDetail}
-          onRegisterPayment={handleRegisterPayment}
-          onArchive={handleArchive}
-        />
-      </div>
+      {/* Debts Grid */}
+      <DebtsTable
+        debts={filteredDebts}
+        accounts={accounts}
+        onViewDetail={handleViewDetail}
+        onRegisterPayment={handleRegisterPayment}
+        onArchive={handleArchive}
+      />
 
       <DebtFormModal
         isOpen={isFormModalOpen}

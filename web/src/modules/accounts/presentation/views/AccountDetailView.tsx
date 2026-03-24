@@ -7,13 +7,23 @@
  * con su resumen financiero y subcuentas
  */
 
-import { Button } from '@/shared/presentation/components/ui/Button';
+import React from 'react';
 import { AccountDetailCard } from '../components/AccountDetailCard';
 import { useAccountDetail } from '../hooks/useAccountDetail';
 
 interface AccountDetailViewProps {
   accountId: number;
 }
+
+const backButtonStyle: React.CSSProperties = {
+  background: 'transparent',
+  border: '1px solid #1e293b',
+  color: '#94a3b8',
+  padding: '8px 16px',
+  borderRadius: 8,
+  cursor: 'pointer',
+  fontSize: 14,
+};
 
 export function AccountDetailView({ accountId }: AccountDetailViewProps) {
   const { accountDetail, isLoading, error } = useAccountDetail(accountId);
@@ -24,21 +34,30 @@ export function AccountDetailView({ accountId }: AccountDetailViewProps) {
 
   if (isLoading) {
     return (
-      <div className="text-center py-12 text-muted-foreground">
-        <p>Cargando detalle de cuenta...</p>
+      <div style={{ textAlign: 'center', padding: '48px 0', color: '#94a3b8' }}>
+        <p style={{ margin: 0 }}>Cargando detalle de cuenta...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="space-y-4">
-        <Button variant="outline" onClick={handleGoBack}>
-          Volver a Cuentas
-        </Button>
-        <div className="p-4 border-2 border-destructive bg-destructive/10 text-destructive rounded-lg">
-          <p className="font-bold">Error:</p>
-          <p>{error}</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div>
+          <button onClick={handleGoBack} style={backButtonStyle}>
+            Volver a Cuentas
+          </button>
+        </div>
+        <div
+          style={{
+            padding: 16,
+            border: '1px solid #ef4444',
+            background: 'rgba(239,68,68,0.1)',
+            borderRadius: 12,
+          }}
+        >
+          <p style={{ fontWeight: 700, color: '#ef4444', margin: 0, marginBottom: 4 }}>Error:</p>
+          <p style={{ color: '#ef4444', margin: 0 }}>{error}</p>
         </div>
       </div>
     );
@@ -46,23 +65,25 @@ export function AccountDetailView({ accountId }: AccountDetailViewProps) {
 
   if (!accountDetail) {
     return (
-      <div className="space-y-4">
-        <Button variant="outline" onClick={handleGoBack}>
-          Volver a Cuentas
-        </Button>
-        <div className="text-center py-12 text-muted-foreground">
-          <p>No se encontro la cuenta</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div>
+          <button onClick={handleGoBack} style={backButtonStyle}>
+            Volver a Cuentas
+          </button>
+        </div>
+        <div style={{ textAlign: 'center', padding: '48px 0', color: '#94a3b8' }}>
+          <p style={{ margin: 0 }}>No se encontro la cuenta</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="outline" onClick={handleGoBack}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <button onClick={handleGoBack} style={backButtonStyle}>
           Volver a Cuentas
-        </Button>
+        </button>
       </div>
 
       <AccountDetailCard detail={accountDetail} />

@@ -196,7 +196,7 @@ export function AccountFormModal({
             </div>
 
             {/* Botones */}
-            <div className="flex justify-end gap-2 p-6 border-t-2 border-foreground bg-background">
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: 24, borderTop: '1px solid #1e293b', background: '#111827' }}>
               <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
                 Cancelar
               </Button>

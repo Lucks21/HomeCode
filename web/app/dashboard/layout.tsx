@@ -8,7 +8,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <ProtectedRoute>
       <div style={{ display: 'flex', minHeight: '100vh' }}>
         <Sidebar />
-        <main style={{ marginLeft: '250px', flex: 1, padding: '24px', backgroundColor: '#f5f5f5' }}>
+        <main style={{ marginLeft: '250px', flex: 1, padding: '32px', backgroundColor: '#0b0f19' }}>
           {children}
         </main>
       </div>

@@ -163,7 +163,7 @@ export function DebtFormModal({
             />
 
             {/* Botones */}
-            <div className="flex justify-end gap-2 pt-4 border-t">
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, paddingTop: 16, borderTop: '1px solid #1e293b' }}>
               <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
                 Cancelar
               </Button>

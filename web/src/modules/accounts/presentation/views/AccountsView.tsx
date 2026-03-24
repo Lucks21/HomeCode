@@ -11,10 +11,8 @@
  */
 
 import { useState, useMemo } from 'react';
+import { Plus, Search } from 'lucide-react';
 import { getErrorMessage } from '@/shared/utils';
-import { Button } from '@/shared/presentation/components/ui/Button';
-import { Input } from '@/shared/presentation/components/ui/Input';
-import { Checkbox } from '@/shared/presentation/components/ui/Checkbox';
 import {
   Select,
   SelectContent,
@@ -149,39 +147,129 @@ export function AccountsView() {
       <ToastNotifications toasts={toasts} onClose={removeToast} />
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: 24,
+        }}
+      >
         <div>
-          <h1 className="text-2xl font-bold">Cuentas</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h1
+            style={{
+              fontSize: 24,
+              fontWeight: 700,
+              color: '#f1f5f9',
+              margin: 0,
+            }}
+          >
+            Cuentas
+          </h1>
+          <p
+            style={{
+              fontSize: 14,
+              color: '#64748b',
+              marginTop: 4,
+              margin: 0,
+              marginBlockStart: 4,
+            }}
+          >
             Gestiona tus cuentas principales, deudas y cuotas
           </p>
         </div>
-        <Button onClick={handleCreateAccount}>
-          + Nueva Cuenta
-        </Button>
+        <button
+          onClick={handleCreateAccount}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            background: '#10b981',
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: 10,
+            padding: '10px 20px',
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'opacity 0.2s',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
+          onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+        >
+          <Plus size={18} />
+          Nueva Cuenta
+        </button>
       </div>
 
       {/* Error */}
       {accountsError && (
-        <div className="mb-4 p-4 border-2 border-destructive bg-destructive/10 text-destructive rounded-lg">
-          <p className="font-bold">Error:</p>
-          <p>{accountsError}</p>
+        <div
+          style={{
+            marginBottom: 16,
+            padding: 16,
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            background: 'rgba(239, 68, 68, 0.1)',
+            borderRadius: 12,
+            color: '#fca5a5',
+          }}
+        >
+          <p style={{ fontWeight: 700, margin: 0, marginBottom: 4 }}>Error:</p>
+          <p style={{ margin: 0 }}>{accountsError}</p>
         </div>
       )}
 
       {/* Filtros */}
-      <div className="flex flex-wrap items-center gap-4 mb-6 p-4 border-2 border-foreground rounded-lg">
-        <div className="flex-1 min-w-[200px]">
-          <Input
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          gap: 16,
+          marginBottom: 24,
+          padding: 16,
+          background: '#111827',
+          border: '1px solid #1e293b',
+          borderRadius: 12,
+        }}
+      >
+        <div style={{ flex: 1, minWidth: 200, position: 'relative' }}>
+          <Search
+            size={16}
+            style={{
+              position: 'absolute',
+              left: 12,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: '#64748b',
+              pointerEvents: 'none',
+            }}
+          />
+          <input
             placeholder="Buscar cuentas..."
             value={filters.search}
             onChange={(e) =>
               setFilters((prev) => ({ ...prev, search: e.target.value }))
             }
+            style={{
+              width: '100%',
+              height: 40,
+              paddingLeft: 36,
+              paddingRight: 12,
+              background: '#1a2332',
+              border: '1px solid #2d3748',
+              borderRadius: 8,
+              color: '#e2e8f0',
+              fontSize: 14,
+              outline: 'none',
+              boxSizing: 'border-box',
+            }}
+            onFocus={(e) => (e.currentTarget.style.borderColor = '#3b82f6')}
+            onBlur={(e) => (e.currentTarget.style.borderColor = '#2d3748')}
           />
         </div>
 
-        <div className="w-[200px]">
+        <div style={{ width: 200 }}>
           <Select
             value={filters.type}
             onValueChange={(val) =>
@@ -191,10 +279,10 @@ export function AccountsView() {
               }))
             }
           >
-            <SelectTrigger>
+            <SelectTrigger className="bg-[#1a2332] border-[#2d3748] border text-[#e2e8f0] rounded-lg">
               <SelectValue placeholder="Filtrar por tipo" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-[#1a2332] border-[#2d3748] border">
               {typeFilterOptions.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
@@ -204,19 +292,41 @@ export function AccountsView() {
           </Select>
         </div>
 
-        <label className="flex items-center gap-2 cursor-pointer">
-          <Checkbox
+        <label
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            cursor: 'pointer',
+            color: '#94a3b8',
+            fontSize: 14,
+          }}
+        >
+          <input
+            type="checkbox"
             checked={filters.includeArchived}
-            onCheckedChange={handleIncludeArchivedChange}
+            onChange={(e) => handleIncludeArchivedChange(e.target.checked)}
+            style={{
+              width: 16,
+              height: 16,
+              accentColor: '#10b981',
+              cursor: 'pointer',
+            }}
           />
-          <span className="text-sm">Incluir archivadas</span>
+          Incluir archivadas
         </label>
       </div>
 
       {/* Loading */}
       {isLoading && (
-        <div className="text-center py-8 text-muted-foreground">
-          <p>Cargando cuentas...</p>
+        <div
+          style={{
+            textAlign: 'center',
+            padding: '32px 0',
+            color: '#94a3b8',
+          }}
+        >
+          <p style={{ margin: 0 }}>Cargando cuentas...</p>
         </div>
       )}
 

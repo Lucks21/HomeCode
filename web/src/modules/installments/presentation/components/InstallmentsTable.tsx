@@ -1,15 +1,5 @@
 'use client';
 
-import { Archive, Eye, CreditCard } from 'lucide-react';
-import { Button } from '@/shared/presentation/components/ui/Button';
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from '@/shared/presentation/components/ui/Table';
 import type { Installment } from '../../domain/types';
 
 interface InstallmentsTableProps {
@@ -22,6 +12,11 @@ interface InstallmentsTableProps {
 const formatCLP = (amount: number) =>
   new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(amount);
 
+const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('es-CL');
+};
+
 export function InstallmentsTable({
   installments,
   onViewDetail,
@@ -30,12 +25,29 @@ export function InstallmentsTable({
 }: InstallmentsTableProps) {
   if (installments.length === 0) {
     return (
-      <div className="border-2 border-foreground p-12 text-center bg-card">
-        <div className="w-16 h-16 border-2 border-foreground mx-auto mb-4 flex items-center justify-center">
-          <span className="text-2xl">$</span>
+      <div style={{
+        background: '#111827',
+        border: '1px solid #1e293b',
+        borderRadius: 16,
+        padding: 48,
+        textAlign: 'center',
+      }}>
+        <div style={{
+          width: 64,
+          height: 64,
+          border: '2px solid #1e293b',
+          borderRadius: 12,
+          margin: '0 auto 16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <span style={{ fontSize: 24, color: '#64748b' }}>$</span>
         </div>
-        <h3 className="font-bold text-lg mb-2">Sin resultados</h3>
-        <p className="text-muted-foreground">
+        <h3 style={{ fontWeight: 700, fontSize: 18, marginBottom: 8, color: '#f1f5f9' }}>
+          Sin resultados
+        </h3>
+        <p style={{ color: '#64748b', margin: 0 }}>
           No se encontraron cuotas registradas.
         </p>
       </div>
@@ -43,77 +55,129 @@ export function InstallmentsTable({
   }
 
   return (
-    <div className="border-2 border-foreground overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow className="border-b-2 border-foreground bg-muted hover:bg-muted">
-            <TableHead className="font-bold">Descripción</TableHead>
-            <TableHead className="font-bold">Monto Total</TableHead>
-            <TableHead className="font-bold">Cuotas</TableHead>
-            <TableHead className="font-bold">Progreso</TableHead>
-            <TableHead className="font-bold text-right">Acciones</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {installments.map((inst) => {
-            const paidCount = inst.paidCount ?? 0;
-            const total = inst.totalInstallments;
-            const percent = inst.progressPercentage ?? (total > 0 ? Math.round((paidCount / total) * 100) : 0);
-            const isPaidOff = paidCount >= total;
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(2, 1fr)',
+      gap: 20,
+    }}>
+      {installments.map((inst) => {
+        const paidCount = inst.paidCount ?? 0;
+        const total = inst.totalInstallments;
+        const percent = inst.progressPercentage ?? (total > 0 ? Math.round((paidCount / total) * 100) : 0);
+        const isPaidOff = paidCount >= total;
+        const remaining = inst.totalAmount - (paidCount * inst.installmentValue);
 
-            return (
-              <TableRow key={inst.id} className="border-b border-border hover:bg-accent/50">
-                <TableCell className="font-medium">{inst.description}</TableCell>
-                <TableCell>{formatCLP(inst.totalAmount)}</TableCell>
-                <TableCell>{formatCLP(inst.installmentValue)} x {total}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <div className="w-24 h-2 bg-muted rounded-full overflow-hidden border border-border">
-                      <div
-                        className="h-full bg-green-500 rounded-full transition-all"
-                        style={{ width: `${percent}%` }}
-                      />
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      {paidCount}/{total} - {percent}%
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center justify-end gap-1">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onViewDetail(inst)}
-                      title="Ver detalle"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    {!isPaidOff && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onPay(inst)}
-                        title="Pagar cuotas"
-                      >
-                        <CreditCard className="h-4 w-4" />
-                      </Button>
-                    )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onArchive(inst)}
-                      title="Archivar"
-                    >
-                      <Archive className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+        return (
+          <div
+            key={inst.id}
+            style={{
+              background: '#111827',
+              border: '1px solid #1e293b',
+              borderRadius: 16,
+              padding: 20,
+              cursor: 'pointer',
+            }}
+            onClick={() => onViewDetail(inst)}
+          >
+            {/* Header: description + start date */}
+            <div style={{ marginBottom: 16 }}>
+              <h3 style={{ fontWeight: 700, fontSize: 16, color: '#f1f5f9', margin: 0 }}>
+                {inst.description}
+              </h3>
+              <p style={{ color: '#64748b', fontSize: 13, marginTop: 4, margin: 0, marginBlockStart: 4 }}>
+                Inicio: {formatDate(inst.startDate)}
+              </p>
+            </div>
+
+            {/* Info row: Monto Total | Valor Cuota */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+              <div>
+                <p style={{ color: '#94a3b8', fontSize: 12, margin: 0, marginBottom: 2 }}>Monto Total</p>
+                <p style={{ color: '#f1f5f9', fontWeight: 600, fontSize: 15, margin: 0 }}>
+                  {formatCLP(inst.totalAmount)}
+                </p>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <p style={{ color: '#94a3b8', fontSize: 12, margin: 0, marginBottom: 2 }}>Valor Cuota</p>
+                <p style={{ color: '#f1f5f9', fontWeight: 600, fontSize: 15, margin: 0 }}>
+                  {formatCLP(inst.installmentValue)}
+                </p>
+              </div>
+            </div>
+
+            {/* Progress bar */}
+            <div style={{ marginBottom: 8 }}>
+              <div style={{
+                height: 8,
+                borderRadius: 4,
+                background: '#2d3748',
+                overflow: 'hidden',
+              }}>
+                <div style={{
+                  height: '100%',
+                  width: `${percent}%`,
+                  background: '#10b981',
+                  borderRadius: 4,
+                  transition: 'width 0.3s ease',
+                }} />
+              </div>
+            </div>
+
+            {/* Progress text */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+              <span style={{ color: '#94a3b8', fontSize: 13 }}>
+                {paidCount} de {total} cuotas pagadas
+              </span>
+              <span style={{ color: '#94a3b8', fontSize: 13 }}>{percent}%</span>
+            </div>
+
+            {/* Remaining amount */}
+            <p style={{ color: '#64748b', fontSize: 13, margin: 0, marginBottom: 16 }}>
+              Monto Restante: {formatCLP(remaining > 0 ? remaining : 0)}
+            </p>
+
+            {/* Action buttons */}
+            <div
+              style={{ display: 'flex', gap: 8 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {!isPaidOff ? (
+                <button
+                  onClick={() => onPay(inst)}
+                  style={{
+                    border: '1px solid #10b981',
+                    color: '#10b981',
+                    background: 'transparent',
+                    borderRadius: 8,
+                    padding: '8px 16px',
+                    cursor: 'pointer',
+                    fontSize: 14,
+                    fontWeight: 500,
+                  }}
+                >
+                  Pagar Cuotas
+                </button>
+              ) : (
+                <button
+                  onClick={() => onArchive(inst)}
+                  style={{
+                    border: '1px solid #10b981',
+                    color: '#10b981',
+                    background: 'transparent',
+                    borderRadius: 8,
+                    padding: '8px 16px',
+                    cursor: 'pointer',
+                    fontSize: 14,
+                    fontWeight: 500,
+                  }}
+                >
+                  Archivar
+                </button>
+              )}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

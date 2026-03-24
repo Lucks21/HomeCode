@@ -49,16 +49,16 @@ export function InstallmentPayModal({
 
         <div className="p-6 space-y-6">
           {installment && (
-            <div className="p-3 bg-muted rounded-md">
-              <p className="text-sm text-muted-foreground">{installment.description}</p>
-              <p className="text-sm font-bold">
+            <div style={{ padding: 12, background: '#0b0f19', borderRadius: 8, border: '1px solid #1e293b' }}>
+              <p style={{ fontSize: 14, color: '#94a3b8', margin: 0 }}>{installment.description}</p>
+              <p style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9', margin: 0, marginTop: 4 }}>
                 Cuotas pendientes: {pendingCount} de {installment.totalInstallments}
               </p>
             </div>
           )}
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <label style={{ fontSize: 14, fontWeight: 500, color: '#e2e8f0' }}>
               Cuantas cuotas desea pagar?
             </label>
             <Input
@@ -68,12 +68,12 @@ export function InstallmentPayModal({
               value={count}
               onChange={(e) => setCount(Number((e.target as HTMLInputElement).value))}
             />
-            <p className="text-sm text-muted-foreground">
+            <p style={{ fontSize: 14, color: '#94a3b8', margin: 0 }}>
               Mínimo 1, máximo {pendingCount}
             </p>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t">
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, paddingTop: 16, borderTop: '1px solid #1e293b' }}>
             <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
               Cancelar
             </Button>

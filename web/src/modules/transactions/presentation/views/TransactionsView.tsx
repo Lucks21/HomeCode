@@ -1,9 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { getErrorMessage } from '@/shared/utils';
-import { ModulePageHeader } from '@/shared/presentation/components/ModulePageHeader';
-import { Button } from '@/shared/presentation/components/ui/Button';
 import { TransactionsFiltersBar } from '../components/TransactionsFiltersBar';
 import { TransactionsTable } from '../components/TransactionsTable';
 import { TransactionFormModal } from '../components/TransactionFormModal';
@@ -18,6 +16,50 @@ const defaultFilters: TransactionFilters = {
   type: 'TODOS',
   dateFrom: '',
   dateTo: '',
+};
+
+const headerStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: '24px',
+};
+
+const titleStyle: React.CSSProperties = {
+  color: '#f1f5f9',
+  fontSize: '1.75rem',
+  fontWeight: 700,
+  margin: 0,
+};
+
+const subtitleStyle: React.CSSProperties = {
+  color: '#64748b',
+  fontSize: '0.9rem',
+  marginTop: '4px',
+};
+
+const greenButtonStyle: React.CSSProperties = {
+  background: '#10b981',
+  color: '#ffffff',
+  border: 'none',
+  borderRadius: '10px',
+  padding: '10px 20px',
+  fontSize: '0.9rem',
+  fontWeight: 600,
+  cursor: 'pointer',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '6px',
+  transition: 'background 0.15s',
+};
+
+const errorBoxStyle: React.CSSProperties = {
+  marginTop: '16px',
+  padding: '16px',
+  background: 'rgba(239, 68, 68, 0.1)',
+  border: '1px solid rgba(239, 68, 68, 0.3)',
+  borderRadius: '10px',
+  color: '#ef4444',
 };
 
 export function TransactionsView() {
@@ -78,7 +120,7 @@ export function TransactionsView() {
     try {
       await archiveTransaction(transaction.id);
     } catch (err) {
-      console.error('Error al archivar transacción:', err);
+      console.error('Error al archivar transaccion:', err);
     }
   };
 
@@ -91,24 +133,35 @@ export function TransactionsView() {
       }
       setIsFormModalOpen(false);
     } catch (err) {
-      const errorMessage = getErrorMessage(err, 'Error al guardar transacción');
+      const errorMessage = getErrorMessage(err, 'Error al guardar transaccion');
       console.error(errorMessage);
     }
   };
 
   return (
     <>
-      <ModulePageHeader
-        title="Transacciones"
-        description="Gestiona los ingresos y gastos de tus cuentas"
-        actions={
-          <Button onClick={handleCreate}>
-            + Nueva Transacción
-          </Button>
-        }
-      />
+      {/* Header */}
+      <div style={headerStyle}>
+        <div>
+          <h1 style={titleStyle}>Transacciones</h1>
+          <p style={subtitleStyle}>Gestiona los ingresos y gastos de tus cuentas</p>
+        </div>
+        <button
+          style={greenButtonStyle}
+          onClick={handleCreate}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background = '#059669';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background = '#10b981';
+          }}
+        >
+          + Nuevo Movimiento
+        </button>
+      </div>
 
-      <div className="mt-4">
+      {/* Filters */}
+      <div style={{ marginBottom: '20px' }}>
         <TransactionsFiltersBar
           filters={filters}
           onFiltersChange={setFilters}
@@ -117,21 +170,25 @@ export function TransactionsView() {
         />
       </div>
 
+      {/* Error */}
       {error && (
-        <div className="mt-4 p-4 border-2 border-destructive bg-destructive/10 text-destructive">
-          <p className="font-bold">Error:</p>
-          <p>{error}</p>
+        <div style={errorBoxStyle}>
+          <p style={{ fontWeight: 700, marginBottom: '4px' }}>Error:</p>
+          <p style={{ margin: 0 }}>{error}</p>
         </div>
       )}
 
-      <div className="mt-4">
+      {/* Transactions List */}
+      <div style={{ marginTop: '8px' }}>
         <TransactionsTable
           transactions={filteredTransactions}
+          accounts={accounts}
           onEdit={handleEdit}
           onArchive={handleArchive}
         />
       </div>
 
+      {/* Form Modal */}
       <TransactionFormModal
         isOpen={isFormModalOpen}
         onClose={() => setIsFormModalOpen(false)}

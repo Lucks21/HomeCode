@@ -1,14 +1,5 @@
 'use client';
 
-import { FiltersBar } from '@/shared/presentation/components/ui/FiltersBar';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/presentation/components/ui/Select';
-import { Input } from '@/shared/presentation/components/ui/Input';
 import type { TransactionFilters } from '../../domain/types';
 import type { Account } from '@/modules/accounts/domain/types';
 
@@ -18,6 +9,52 @@ interface TransactionsFiltersBarProps {
   onClearFilters: () => void;
   accounts: Account[];
 }
+
+const barStyle: React.CSSProperties = {
+  background: '#111827',
+  border: '1px solid #1e293b',
+  borderRadius: '12px',
+  padding: '16px',
+};
+
+const gridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(4, 1fr)',
+  gap: '12px',
+  alignItems: 'end',
+};
+
+const inputStyle: React.CSSProperties = {
+  background: '#1a2332',
+  border: '1px solid #2d3748',
+  color: '#e2e8f0',
+  borderRadius: '8px',
+  padding: '8px 12px',
+  width: '100%',
+  fontSize: '0.875rem',
+  outline: 'none',
+  appearance: 'none',
+  WebkitAppearance: 'none',
+};
+
+const labelStyle: React.CSSProperties = {
+  color: '#94a3b8',
+  fontSize: '0.75rem',
+  fontWeight: 500,
+  marginBottom: '4px',
+  display: 'block',
+};
+
+const clearButtonStyle: React.CSSProperties = {
+  background: 'transparent',
+  border: '1px solid #2d3748',
+  color: '#94a3b8',
+  borderRadius: '8px',
+  padding: '8px 16px',
+  fontSize: '0.875rem',
+  cursor: 'pointer',
+  whiteSpace: 'nowrap',
+};
 
 export function TransactionsFiltersBar({
   filters,
@@ -32,75 +69,79 @@ export function TransactionsFiltersBar({
     filters.dateTo !== '';
 
   return (
-    <FiltersBar hasActiveFilters={hasActiveFilters} onClearFilters={onClearFilters}>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div style={barStyle}>
+      <div style={gridStyle}>
         <div>
-          <Select
+          <label style={labelStyle}>Cuenta</label>
+          <select
+            style={inputStyle}
             value={filters.accountId?.toString() ?? 'TODOS'}
-            onValueChange={(value) =>
+            onChange={(e) =>
               onFiltersChange({
                 ...filters,
-                accountId: value === 'TODOS' ? null : parseInt(value),
+                accountId: e.target.value === 'TODOS' ? null : parseInt(e.target.value),
               })
             }
           >
-            <SelectTrigger>
-              <SelectValue placeholder="Cuenta" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="TODOS">Todas las cuentas</SelectItem>
-              {accounts.map((account) => (
-                <SelectItem key={account.id} value={account.id.toString()}>
-                  {account.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <option value="TODOS">Todas las cuentas</option>
+            {accounts.map((account) => (
+              <option key={account.id} value={account.id.toString()}>
+                {account.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
-          <Select
+          <label style={labelStyle}>Tipo</label>
+          <select
+            style={inputStyle}
             value={filters.type}
-            onValueChange={(value) =>
+            onChange={(e) =>
               onFiltersChange({
                 ...filters,
-                type: value as 'TODOS' | 'INCOME' | 'EXPENSE',
+                type: e.target.value as 'TODOS' | 'INCOME' | 'EXPENSE',
               })
             }
           >
-            <SelectTrigger>
-              <SelectValue placeholder="Tipo" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="TODOS">Todos</SelectItem>
-              <SelectItem value="INCOME">Ingresos</SelectItem>
-              <SelectItem value="EXPENSE">Gastos</SelectItem>
-            </SelectContent>
-          </Select>
+            <option value="TODOS">Todos</option>
+            <option value="INCOME">Ingresos</option>
+            <option value="EXPENSE">Gastos</option>
+          </select>
         </div>
 
         <div>
-          <Input
+          <label style={labelStyle}>Desde</label>
+          <input
             type="date"
-            placeholder="Desde"
+            style={inputStyle}
             value={filters.dateFrom}
             onChange={(e) =>
-              onFiltersChange({ ...filters, dateFrom: (e.target as HTMLInputElement).value })
+              onFiltersChange({ ...filters, dateFrom: e.target.value })
             }
           />
         </div>
 
         <div>
-          <Input
+          <label style={labelStyle}>Hasta</label>
+          <input
             type="date"
-            placeholder="Hasta"
+            style={inputStyle}
             value={filters.dateTo}
             onChange={(e) =>
-              onFiltersChange({ ...filters, dateTo: (e.target as HTMLInputElement).value })
+              onFiltersChange({ ...filters, dateTo: e.target.value })
             }
           />
         </div>
       </div>
-    </FiltersBar>
+
+      {hasActiveFilters && (
+        <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
+          <button style={clearButtonStyle} onClick={onClearFilters}>
+            Limpiar filtros
+          </button>
+        </div>
+      )}
+    </div>
   );
 }

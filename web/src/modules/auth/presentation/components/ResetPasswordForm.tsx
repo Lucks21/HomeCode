@@ -74,20 +74,42 @@ export function ResetPasswordForm({ email, code }: ResetPasswordFormProps) {
     if (/[0-9]/.test(password)) strength++;
     if (/[^A-Za-z0-9]/.test(password)) strength++;
 
-    if (strength <= 2) return { strength: 'Débil', color: 'bg-red-500', width: '33%' };
-    if (strength <= 3) return { strength: 'Media', color: 'bg-yellow-500', width: '66%' };
-    return { strength: 'Fuerte', color: 'bg-green-500', width: '100%' };
+    if (strength <= 2) return { strength: 'Débil', color: '#ef4444', width: '33%' };
+    if (strength <= 3) return { strength: 'Media', color: '#eab308', width: '66%' };
+    return { strength: 'Fuerte', color: '#10b981', width: '100%' };
   };
 
   const passwordStrength = newPassword ? getPasswordStrength(newPassword) : null;
 
+  const isSubmitDisabled = isLoading || !newPassword || !confirmPassword;
+
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="bg-white shadow-lg rounded-xl p-8 border border-gray-100">
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-4">
+    <div style={{ width: '100%', maxWidth: 448, margin: '0 auto' }}>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <div
+        style={{
+          background: '#111827',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
+          borderRadius: 12,
+          padding: 32,
+          border: '1px solid #1e293b',
+        }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 64,
+              height: 64,
+              background: 'rgba(16, 185, 129, 0.15)',
+              borderRadius: '50%',
+              marginBottom: 16,
+            }}
+          >
             <svg
-              className="w-8 h-8 text-purple-600"
+              style={{ width: 32, height: 32, color: '#10b981' }}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -100,16 +122,31 @@ export function ResetPasswordForm({ email, code }: ResetPasswordFormProps) {
               />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-800">Nueva contraseña</h2>
-          <p className="text-sm text-gray-500 mt-1">Crea una contraseña segura para tu cuenta</p>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f1f5f9', margin: '0 0 4px' }}>
+            Nueva contraseña
+          </h2>
+          <p style={{ fontSize: '0.875rem', color: '#64748b', marginTop: 4, marginBottom: 0 }}>
+            Crea una contraseña segura para tu cuenta
+          </p>
         </div>
 
         {success ? (
-          <div className="space-y-4">
-            <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-md">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div
+              style={{
+                background: 'rgba(16, 185, 129, 0.1)',
+                borderLeft: '4px solid #10b981',
+                padding: 16,
+                borderRadius: 6,
+              }}
+            >
+              <div style={{ display: 'flex' }}>
+                <div style={{ flexShrink: 0 }}>
+                  <svg
+                    style={{ height: 20, width: 20, color: '#10b981' }}
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path
                       fillRule="evenodd"
                       d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -117,28 +154,47 @@ export function ResetPasswordForm({ email, code }: ResetPasswordFormProps) {
                     />
                   </svg>
                 </div>
-                <div className="ml-3">
-                  <p className="text-sm text-green-700 font-medium">
+                <div style={{ marginLeft: 12 }}>
+                  <p style={{ fontSize: '0.875rem', color: '#a7f3d0', fontWeight: 500, margin: 0 }}>
                     ¡Contraseña restablecida exitosamente!
                   </p>
-                  <p className="text-xs text-green-600 mt-1">Redirigiendo al inicio de sesión...</p>
+                  <p style={{ fontSize: '0.75rem', color: '#6ee7b7', marginTop: 4, marginBottom: 0 }}>
+                    Redirigiendo al inicio de sesión...
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <div>
               <label
                 htmlFor="newPassword"
-                className="block text-sm font-semibold text-gray-700 mb-2"
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  color: '#e2e8f0',
+                  marginBottom: 8,
+                }}
               >
                 Nueva contraseña
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div style={{ position: 'relative' }}>
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    paddingLeft: 12,
+                    display: 'flex',
+                    alignItems: 'center',
+                    pointerEvents: 'none',
+                  }}
+                >
                   <svg
-                    className="h-5 w-5 text-gray-400"
+                    style={{ height: 20, width: 20, color: '#64748b' }}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -158,19 +214,46 @@ export function ResetPasswordForm({ email, code }: ResetPasswordFormProps) {
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed transition-colors"
+                  style={{
+                    width: '100%',
+                    paddingLeft: 40,
+                    paddingRight: 40,
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    border: '1px solid #2d3748',
+                    borderRadius: 8,
+                    outline: 'none',
+                    background: isLoading ? '#0b0f19' : '#1a2332',
+                    color: '#e2e8f0',
+                    fontSize: '0.95rem',
+                    boxSizing: 'border-box',
+                  }}
+                  onFocus={(e) => (e.currentTarget.style.boxShadow = '0 0 0 2px #10b981')}
+                  onBlur={(e) => (e.currentTarget.style.boxShadow = 'none')}
                   placeholder="••••••••"
                   autoComplete="new-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    paddingRight: 12,
+                    display: 'flex',
+                    alignItems: 'center',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: '0 12px',
+                  }}
                   tabIndex={-1}
                 >
                   {showPassword ? (
                     <svg
-                      className="h-5 w-5 text-gray-400 hover:text-gray-600"
+                      style={{ height: 20, width: 20, color: '#64748b' }}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -184,7 +267,7 @@ export function ResetPasswordForm({ email, code }: ResetPasswordFormProps) {
                     </svg>
                   ) : (
                     <svg
-                      className="h-5 w-5 text-gray-400 hover:text-gray-600"
+                      style={{ height: 20, width: 20, color: '#64748b' }}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -206,25 +289,37 @@ export function ResetPasswordForm({ email, code }: ResetPasswordFormProps) {
                 </button>
               </div>
               {passwordStrength && (
-                <div className="mt-2">
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-gray-600">Fortaleza:</span>
-                    <span
-                      className={`font-medium ${
-                        passwordStrength.strength === 'Débil'
-                          ? 'text-red-600'
-                          : passwordStrength.strength === 'Media'
-                            ? 'text-yellow-600'
-                            : 'text-green-600'
-                      }`}
-                    >
+                <div style={{ marginTop: 8 }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      fontSize: '0.75rem',
+                      marginBottom: 4,
+                    }}
+                  >
+                    <span style={{ color: '#94a3b8' }}>Fortaleza:</span>
+                    <span style={{ fontWeight: 500, color: passwordStrength.color }}>
                       {passwordStrength.strength}
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    style={{
+                      width: '100%',
+                      background: '#2d3748',
+                      borderRadius: 9999,
+                      height: 8,
+                    }}
+                  >
                     <div
-                      className={`h-2 rounded-full transition-all duration-300 ${passwordStrength.color}`}
-                      style={{ width: passwordStrength.width }}
+                      style={{
+                        height: 8,
+                        borderRadius: 9999,
+                        transition: 'all 0.3s',
+                        background: passwordStrength.color,
+                        width: passwordStrength.width,
+                      }}
                     ></div>
                   </div>
                 </div>
@@ -234,14 +329,31 @@ export function ResetPasswordForm({ email, code }: ResetPasswordFormProps) {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-semibold text-gray-700 mb-2"
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  color: '#e2e8f0',
+                  marginBottom: 8,
+                }}
               >
                 Confirmar contraseña
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div style={{ position: 'relative' }}>
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    paddingLeft: 12,
+                    display: 'flex',
+                    alignItems: 'center',
+                    pointerEvents: 'none',
+                  }}
+                >
                   <svg
-                    className="h-5 w-5 text-gray-400"
+                    style={{ height: 20, width: 20, color: '#64748b' }}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -261,19 +373,46 @@ export function ResetPasswordForm({ email, code }: ResetPasswordFormProps) {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed transition-colors"
+                  style={{
+                    width: '100%',
+                    paddingLeft: 40,
+                    paddingRight: 40,
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    border: '1px solid #2d3748',
+                    borderRadius: 8,
+                    outline: 'none',
+                    background: isLoading ? '#0b0f19' : '#1a2332',
+                    color: '#e2e8f0',
+                    fontSize: '0.95rem',
+                    boxSizing: 'border-box',
+                  }}
+                  onFocus={(e) => (e.currentTarget.style.boxShadow = '0 0 0 2px #10b981')}
+                  onBlur={(e) => (e.currentTarget.style.boxShadow = 'none')}
                   placeholder="••••••••"
                   autoComplete="new-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    paddingRight: 12,
+                    display: 'flex',
+                    alignItems: 'center',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: '0 12px',
+                  }}
                   tabIndex={-1}
                 >
                   {showConfirmPassword ? (
                     <svg
-                      className="h-5 w-5 text-gray-400 hover:text-gray-600"
+                      style={{ height: 20, width: 20, color: '#64748b' }}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -287,7 +426,7 @@ export function ResetPasswordForm({ email, code }: ResetPasswordFormProps) {
                     </svg>
                   ) : (
                     <svg
-                      className="h-5 w-5 text-gray-400 hover:text-gray-600"
+                      style={{ height: 20, width: 20, color: '#64748b' }}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -310,38 +449,65 @@ export function ResetPasswordForm({ email, code }: ResetPasswordFormProps) {
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-xs font-semibold text-blue-900 mb-2">
+            <div
+              style={{
+                background: 'rgba(16, 185, 129, 0.08)',
+                border: '1px solid rgba(16, 185, 129, 0.2)',
+                borderRadius: 8,
+                padding: 16,
+              }}
+            >
+              <p
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  color: '#a7f3d0',
+                  marginBottom: 8,
+                  marginTop: 0,
+                }}
+              >
                 La contraseña debe contener:
               </p>
-              <ul className="text-xs text-blue-700 space-y-1">
-                <li className="flex items-center">
+              <ul style={{ fontSize: '0.75rem', color: '#94a3b8', margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <li style={{ display: 'flex', alignItems: 'center' }}>
                   <span
-                    className={`mr-2 ${newPassword.length >= 8 ? 'text-green-600' : 'text-gray-400'}`}
+                    style={{
+                      marginRight: 8,
+                      color: newPassword.length >= 8 ? '#10b981' : '#64748b',
+                    }}
                   >
                     ✓
                   </span>
                   Al menos 8 caracteres
                 </li>
-                <li className="flex items-center">
+                <li style={{ display: 'flex', alignItems: 'center' }}>
                   <span
-                    className={`mr-2 ${/[A-Z]/.test(newPassword) ? 'text-green-600' : 'text-gray-400'}`}
+                    style={{
+                      marginRight: 8,
+                      color: /[A-Z]/.test(newPassword) ? '#10b981' : '#64748b',
+                    }}
                   >
                     ✓
                   </span>
                   Una letra mayúscula
                 </li>
-                <li className="flex items-center">
+                <li style={{ display: 'flex', alignItems: 'center' }}>
                   <span
-                    className={`mr-2 ${/[a-z]/.test(newPassword) ? 'text-green-600' : 'text-gray-400'}`}
+                    style={{
+                      marginRight: 8,
+                      color: /[a-z]/.test(newPassword) ? '#10b981' : '#64748b',
+                    }}
                   >
                     ✓
                   </span>
                   Una letra minúscula
                 </li>
-                <li className="flex items-center">
+                <li style={{ display: 'flex', alignItems: 'center' }}>
                   <span
-                    className={`mr-2 ${/[0-9]/.test(newPassword) ? 'text-green-600' : 'text-gray-400'}`}
+                    style={{
+                      marginRight: 8,
+                      color: /[0-9]/.test(newPassword) ? '#10b981' : '#64748b',
+                    }}
                   >
                     ✓
                   </span>
@@ -351,10 +517,21 @@ export function ResetPasswordForm({ email, code }: ResetPasswordFormProps) {
             </div>
 
             {(validationError || error) && (
-              <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+              <div
+                style={{
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  borderLeft: '4px solid #ef4444',
+                  padding: 16,
+                  borderRadius: 6,
+                }}
+              >
+                <div style={{ display: 'flex' }}>
+                  <div style={{ flexShrink: 0 }}>
+                    <svg
+                      style={{ height: 20, width: 20, color: '#ef4444' }}
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
                       <path
                         fillRule="evenodd"
                         d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -362,8 +539,10 @@ export function ResetPasswordForm({ email, code }: ResetPasswordFormProps) {
                       />
                     </svg>
                   </div>
-                  <div className="ml-3">
-                    <p className="text-sm text-red-700 font-medium">{validationError || error}</p>
+                  <div style={{ marginLeft: 12 }}>
+                    <p style={{ fontSize: '0.875rem', color: '#fca5a5', fontWeight: 500, margin: 0 }}>
+                      {validationError || error}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -371,18 +550,41 @@ export function ResetPasswordForm({ email, code }: ResetPasswordFormProps) {
 
             <button
               type="submit"
-              disabled={isLoading || !newPassword || !confirmPassword}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-500 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+              disabled={isSubmitDisabled}
+              style={{
+                width: '100%',
+                background: isSubmitDisabled ? '#1e293b' : '#10b981',
+                color: isSubmitDisabled ? '#64748b' : '#ffffff',
+                fontWeight: 600,
+                padding: '12px 16px',
+                borderRadius: 8,
+                border: 'none',
+                cursor: isSubmitDisabled ? 'not-allowed' : 'pointer',
+                fontSize: '0.95rem',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                if (!isSubmitDisabled) e.currentTarget.style.background = '#059669';
+              }}
+              onMouseLeave={(e) => {
+                if (!isSubmitDisabled) e.currentTarget.style.background = '#10b981';
+              }}
             >
               {isLoading ? (
-                <span className="flex items-center justify-center">
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    style={{
+                      width: 20,
+                      height: 20,
+                      marginRight: 12,
+                      animation: 'spin 1s linear infinite',
+                    }}
                     fill="none"
                     viewBox="0 0 24 24"
                   >
                     <circle
-                      className="opacity-25"
+                      style={{ opacity: 0.25 }}
                       cx="12"
                       cy="12"
                       r="10"
@@ -390,7 +592,7 @@ export function ResetPasswordForm({ email, code }: ResetPasswordFormProps) {
                       strokeWidth="4"
                     ></circle>
                     <path
-                      className="opacity-75"
+                      style={{ opacity: 0.75 }}
                       fill="currentColor"
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>

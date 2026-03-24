@@ -23,39 +23,85 @@ export function InstallmentDetailCard({ installment }: InstallmentDetailCardProp
       : 0);
 
   return (
-    <div className="border-2 border-foreground bg-card p-6 space-y-4">
-      <div>
-        <h3 className="text-lg font-bold">{installment.description}</h3>
-        <p className="text-sm text-muted-foreground">
-          Inicio: {formatDate(installment.startDate)}
-        </p>
+    <div
+      style={{
+        background: '#111827',
+        border: '1px solid #1e293b',
+        borderRadius: 16,
+        padding: 24,
+      }}
+    >
+      {/* Header */}
+      <div style={{ marginBottom: 4 }}>
+        <h3 style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f9', margin: 0 }}>
+          {installment.description}
+        </h3>
       </div>
+      <p style={{ color: '#64748b', fontSize: 13, marginBottom: 20, marginTop: 4 }}>
+        Inicio: {formatDate(installment.startDate)}
+      </p>
 
-      <div className="grid grid-cols-3 gap-4">
+      {/* Stats grid */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: 16,
+          marginBottom: 20,
+        }}
+      >
         <div>
-          <p className="text-sm text-muted-foreground">Monto total</p>
-          <p className="text-lg font-bold">{formatCLP(installment.totalAmount)}</p>
+          <p style={{ color: '#94a3b8', fontSize: 13, marginBottom: 4, marginTop: 0 }}>Monto total</p>
+          <p style={{ color: '#f1f5f9', fontSize: 18, fontWeight: 700, margin: 0 }}>
+            {formatCLP(installment.totalAmount)}
+          </p>
         </div>
         <div>
-          <p className="text-sm text-muted-foreground">Valor cuota</p>
-          <p className="text-lg font-bold">{formatCLP(installment.installmentValue)}</p>
+          <p style={{ color: '#94a3b8', fontSize: 13, marginBottom: 4, marginTop: 0 }}>Valor cuota</p>
+          <p style={{ color: '#f1f5f9', fontSize: 18, fontWeight: 700, margin: 0 }}>
+            {formatCLP(installment.installmentValue)}
+          </p>
         </div>
         <div>
-          <p className="text-sm text-muted-foreground">Cuotas</p>
-          <p className="text-lg font-bold">{paidCount}/{installment.totalInstallments}</p>
+          <p style={{ color: '#94a3b8', fontSize: 13, marginBottom: 4, marginTop: 0 }}>Cuotas</p>
+          <p style={{ color: '#f1f5f9', fontSize: 18, fontWeight: 700, margin: 0 }}>
+            {paidCount}/{installment.totalInstallments}
+          </p>
         </div>
       </div>
 
       {/* Progress bar */}
       <div>
-        <div className="flex justify-between text-sm mb-1">
-          <span>Progreso ({paidCount} pagadas, {pendingCount} pendientes)</span>
-          <span>{percent}%</span>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            fontSize: 13,
+            marginBottom: 6,
+          }}
+        >
+          <span style={{ color: '#94a3b8' }}>
+            Progreso ({paidCount} pagadas, {pendingCount} pendientes)
+          </span>
+          <span style={{ color: '#94a3b8' }}>{percent}%</span>
         </div>
-        <div className="w-full h-3 bg-muted rounded-full overflow-hidden border border-border">
+        <div
+          style={{
+            width: '100%',
+            height: 8,
+            borderRadius: 4,
+            background: '#2d3748',
+            overflow: 'hidden',
+          }}
+        >
           <div
-            className="h-full bg-green-500 rounded-full transition-all"
-            style={{ width: `${percent}%` }}
+            style={{
+              width: `${percent}%`,
+              height: '100%',
+              borderRadius: 4,
+              background: '#10b981',
+              transition: 'width 0.3s ease',
+            }}
           />
         </div>
       </div>

@@ -7,13 +7,18 @@
  */
 
 import React from 'react';
-import { Badge } from '@/shared/presentation/components/ui/Badge';
 import type { AccountDetail } from '../../domain/types';
 
 const typeLabels: Record<string, string> = {
   MAIN: 'Principal',
   DEBT: 'Deuda',
   INSTALLMENT: 'Cuota',
+};
+
+const typeStyles: Record<string, { background: string; color: string }> = {
+  MAIN: { background: 'rgba(59,130,246,0.15)', color: '#3b82f6' },
+  DEBT: { background: 'rgba(239,68,68,0.15)', color: '#ef4444' },
+  INSTALLMENT: { background: 'rgba(251,191,36,0.15)', color: '#fbbf24' },
 };
 
 function formatCLP(amount: number): string {
@@ -25,40 +30,94 @@ interface AccountDetailCardProps {
 }
 
 export function AccountDetailCard({ detail }: AccountDetailCardProps) {
+  const typeStyle = typeStyles[detail.type] ?? typeStyles.MAIN;
+
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       {/* Informacion principal */}
-      <div className="border-2 border-foreground rounded-lg p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <h2 className="text-2xl font-bold">{detail.name}</h2>
-          <Badge variant="outline">{typeLabels[detail.type] || detail.type}</Badge>
+      <div
+        style={{
+          background: '#111827',
+          border: '1px solid #1e293b',
+          borderRadius: 16,
+          padding: 24,
+        }}
+      >
+        {/* Header: nombre + badges */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: '#f1f5f9', margin: 0 }}>
+            {detail.name}
+          </h2>
+          <span
+            style={{
+              background: typeStyle.background,
+              color: typeStyle.color,
+              padding: '4px 14px',
+              borderRadius: 9999,
+              fontSize: 12,
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {typeLabels[detail.type] || detail.type}
+          </span>
           {detail.archived && (
-            <Badge variant="secondary">Archivada</Badge>
+            <span
+              style={{
+                background: 'rgba(100,116,139,0.15)',
+                color: '#94a3b8',
+                padding: '4px 14px',
+                borderRadius: 9999,
+                fontSize: 12,
+                fontWeight: 600,
+              }}
+            >
+              Archivada
+            </span>
           )}
         </div>
 
-        {/* Resumen financiero */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-          <div className="border-2 border-foreground rounded-lg p-4">
-            <p className="text-sm text-muted-foreground font-medium">Ingresos</p>
-            <p className="text-xl font-bold text-green-600 mt-1">
+        {/* Balance grande */}
+        <div style={{ marginBottom: 24 }}>
+          <p style={{ color: '#94a3b8', fontSize: 13, margin: 0, marginBottom: 4 }}>Balance</p>
+          <p
+            style={{
+              fontSize: 32,
+              fontWeight: 700,
+              margin: 0,
+              color: detail.summary.balance >= 0 ? '#10b981' : '#ef4444',
+            }}
+          >
+            {formatCLP(detail.summary.balance)}
+          </p>
+        </div>
+
+        {/* Resumen financiero: Ingresos / Gastos */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div
+            style={{
+              background: '#0b0f19',
+              border: '1px solid #1e293b',
+              borderRadius: 12,
+              padding: 16,
+            }}
+          >
+            <p style={{ color: '#94a3b8', fontSize: 13, margin: 0, marginBottom: 4 }}>Ingresos</p>
+            <p style={{ color: '#10b981', fontSize: 20, fontWeight: 700, margin: 0 }}>
               {formatCLP(detail.summary.income)}
             </p>
           </div>
-          <div className="border-2 border-foreground rounded-lg p-4">
-            <p className="text-sm text-muted-foreground font-medium">Gastos</p>
-            <p className="text-xl font-bold text-red-600 mt-1">
+          <div
+            style={{
+              background: '#0b0f19',
+              border: '1px solid #1e293b',
+              borderRadius: 12,
+              padding: 16,
+            }}
+          >
+            <p style={{ color: '#94a3b8', fontSize: 13, margin: 0, marginBottom: 4 }}>Gastos</p>
+            <p style={{ color: '#ef4444', fontSize: 20, fontWeight: 700, margin: 0 }}>
               {formatCLP(detail.summary.expenses)}
-            </p>
-          </div>
-          <div className="border-2 border-foreground rounded-lg p-4">
-            <p className="text-sm text-muted-foreground font-medium">Balance</p>
-            <p
-              className={`text-xl font-bold mt-1 ${
-                detail.summary.balance >= 0 ? 'text-green-600' : 'text-red-600'
-              }`}
-            >
-              {formatCLP(detail.summary.balance)}
             </p>
           </div>
         </div>
@@ -66,27 +125,67 @@ export function AccountDetailCard({ detail }: AccountDetailCardProps) {
 
       {/* Cuentas hijas */}
       {detail.children && detail.children.length > 0 && (
-        <div className="border-2 border-foreground rounded-lg p-6">
-          <h3 className="text-lg font-bold mb-4">Subcuentas</h3>
-          <div className="space-y-2">
-            {detail.children.map((child) => (
-              <div
-                key={child.id}
-                className="flex items-center justify-between py-2 px-4 border border-border rounded-md hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-sm">{child.name}</span>
-                  <Badge variant="outline" className="text-xs">
-                    {typeLabels[child.type] || child.type}
-                  </Badge>
-                  {child.archived && (
-                    <Badge variant="secondary" className="text-xs">
-                      Archivada
-                    </Badge>
-                  )}
+        <div
+          style={{
+            background: '#111827',
+            border: '1px solid #1e293b',
+            borderRadius: 16,
+            padding: 24,
+          }}
+        >
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9', margin: 0, marginBottom: 16 }}>
+            Subcuentas
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {detail.children.map((child) => {
+              const childTypeStyle = typeStyles[child.type] ?? typeStyles.MAIN;
+              return (
+                <div
+                  key={child.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '10px 14px',
+                    background: '#0b0f19',
+                    borderRadius: 10,
+                    border: '1px solid #1e293b',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontWeight: 500, fontSize: 14, color: '#e2e8f0' }}>
+                      {child.name}
+                    </span>
+                    <span
+                      style={{
+                        background: childTypeStyle.background,
+                        color: childTypeStyle.color,
+                        padding: '2px 10px',
+                        borderRadius: 9999,
+                        fontSize: 11,
+                        fontWeight: 600,
+                      }}
+                    >
+                      {typeLabels[child.type] || child.type}
+                    </span>
+                    {child.archived && (
+                      <span
+                        style={{
+                          background: 'rgba(100,116,139,0.15)',
+                          color: '#94a3b8',
+                          padding: '2px 10px',
+                          borderRadius: 9999,
+                          fontSize: 11,
+                          fontWeight: 600,
+                        }}
+                      >
+                        Archivada
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

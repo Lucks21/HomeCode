@@ -22,42 +22,66 @@ export function Select({ value, onValueChange, children }: SelectProps) {
   const [open, setOpen] = useState(false);
   return (
     <SelectContext.Provider value={{ value, onValueChange, open, setOpen }}>
-      <div className="relative">{children}</div>
+      <div style={{ position: 'relative' }}>{children}</div>
     </SelectContext.Provider>
   );
 }
 
 export function SelectTrigger({
   children,
-  className = '',
+  className,
+  style,
 }: {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   const { open, setOpen } = React.useContext(SelectContext);
   return (
     <button
       type="button"
       onClick={() => setOpen(!open)}
-      className={`flex h-10 w-full items-center justify-between rounded-md border-2 border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      style={{
+        display: 'flex',
+        height: 40,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        background: '#1a2332',
+        border: '1px solid #2d3748',
+        borderRadius: 8,
+        color: '#e2e8f0',
+        padding: '8px 12px',
+        fontSize: 14,
+        cursor: 'pointer',
+        outline: 'none',
+        boxSizing: 'border-box',
+        ...style,
+      }}
     >
       {children}
-      <span className="ml-2">▾</span>
+      <span style={{ marginLeft: 8, color: '#64748b' }}>&#9662;</span>
     </button>
   );
 }
 
 export function SelectValue({ placeholder }: { placeholder?: string }) {
   const { value } = React.useContext(SelectContext);
-  return <span className={value ? '' : 'text-muted-foreground'}>{value ?? placeholder}</span>;
+  return (
+    <span style={{ color: value ? '#e2e8f0' : '#64748b' }}>
+      {value ?? placeholder}
+    </span>
+  );
 }
 
 export function SelectContent({
   children,
-  className = '',
+  className,
+  style,
 }: {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   const { open, setOpen } = React.useContext(SelectContext);
   const ref = useRef<HTMLDivElement>(null);
@@ -76,7 +100,19 @@ export function SelectContent({
   return (
     <div
       ref={ref}
-      className={`absolute z-50 min-w-full mt-1 rounded-md border-2 border-foreground bg-background shadow-lg ${className}`}
+      style={{
+        position: 'absolute',
+        zIndex: 50,
+        minWidth: '100%',
+        marginTop: 4,
+        background: '#111827',
+        border: '1px solid #1e293b',
+        borderRadius: 8,
+        boxShadow: '0 10px 25px rgba(0,0,0,0.4)',
+        overflowY: 'auto',
+        maxHeight: 240,
+        ...style,
+      }}
     >
       {children}
     </div>
@@ -85,9 +121,22 @@ export function SelectContent({
 
 export function SelectItem({ value, children }: { value: string; children: React.ReactNode }) {
   const { onValueChange, setOpen } = React.useContext(SelectContext);
+  const [hovered, setHovered] = useState(false);
   return (
     <div
-      className="relative flex cursor-pointer select-none items-center px-3 py-2 text-sm outline-none hover:bg-muted"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '8px 12px',
+        fontSize: 14,
+        color: '#e2e8f0',
+        cursor: 'pointer',
+        userSelect: 'none',
+        background: hovered ? 'rgba(255,255,255,0.05)' : 'transparent',
+        transition: 'background 0.1s',
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       onClick={() => {
         onValueChange?.(value);
         setOpen(false);

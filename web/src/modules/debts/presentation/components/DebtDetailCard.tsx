@@ -1,6 +1,5 @@
 'use client';
 
-import { Badge } from '@/shared/presentation/components/ui/Badge';
 import type { Debt } from '../../domain/types';
 
 interface DebtDetailCardProps {
@@ -15,52 +14,117 @@ const formatDate = (dateStr: string) => {
   return date.toLocaleDateString('es-CL');
 };
 
-const statusConfig: Record<string, { label: string; variant: 'default' | 'success' | 'destructive' | 'outline' | 'secondary' }> = {
-  PENDING: { label: 'Pendiente', variant: 'outline' },
-  PARTIAL: { label: 'Parcial', variant: 'secondary' },
-  PAID: { label: 'Pagada', variant: 'success' },
+const statusStyles: Record<string, { label: string; background: string; color: string }> = {
+  PENDING: { label: 'Pendiente', background: 'rgba(251,191,36,0.15)', color: '#fbbf24' },
+  PARTIAL: { label: 'Parcial', background: 'rgba(251,146,60,0.15)', color: '#fb923c' },
+  PAID: { label: 'Pagada', background: 'rgba(16,185,129,0.15)', color: '#10b981' },
 };
 
 export function DebtDetailCard({ debt }: DebtDetailCardProps) {
   const paid = debt.amount - debt.remainingAmount;
   const progressPercent = debt.amount > 0 ? Math.round((paid / debt.amount) * 100) : 0;
-  const config = statusConfig[debt.status] ?? statusConfig.PENDING;
+  const status = statusStyles[debt.status] ?? statusStyles.PENDING;
 
   return (
-    <div className="border-2 border-foreground bg-card p-6 space-y-4">
-      <div className="flex items-start justify-between">
-        <div>
-          <h3 className="text-lg font-bold">{debt.description}</h3>
-          <p className="text-sm text-muted-foreground">Creada el {formatDate(debt.date)}</p>
-        </div>
-        <Badge variant={config.variant}>{config.label}</Badge>
+    <div
+      style={{
+        background: '#111827',
+        border: '1px solid #1e293b',
+        borderRadius: 16,
+        padding: 24,
+      }}
+    >
+      {/* Top row: description + status badge */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          marginBottom: 4,
+        }}
+      >
+        <h3 style={{ fontSize: 18, fontWeight: 700, color: '#ffffff', margin: 0 }}>
+          {debt.description}
+        </h3>
+        <span
+          style={{
+            background: status.background,
+            color: status.color,
+            padding: '4px 14px',
+            borderRadius: 9999,
+            fontSize: 12,
+            fontWeight: 600,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {status.label}
+        </span>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      {/* Date */}
+      <p style={{ color: '#64748b', fontSize: 13, marginBottom: 20, marginTop: 4 }}>
+        Creada el {formatDate(debt.date)}
+      </p>
+
+      {/* Amounts grid */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: 16,
+          marginBottom: 20,
+        }}
+      >
         <div>
-          <p className="text-sm text-muted-foreground">Monto original</p>
-          <p className="text-lg font-bold">{formatCLP(debt.amount)}</p>
+          <p style={{ color: '#64748b', fontSize: 13, marginBottom: 4, marginTop: 0 }}>Monto original</p>
+          <p style={{ color: '#ffffff', fontSize: 18, fontWeight: 700, margin: 0 }}>
+            {formatCLP(debt.amount)}
+          </p>
         </div>
         <div>
-          <p className="text-sm text-muted-foreground">Pagado</p>
-          <p className="text-lg font-bold text-green-600">{formatCLP(paid)}</p>
+          <p style={{ color: '#64748b', fontSize: 13, marginBottom: 4, marginTop: 0 }}>Pagado</p>
+          <p style={{ color: '#10b981', fontSize: 18, fontWeight: 700, margin: 0 }}>
+            {formatCLP(paid)}
+          </p>
         </div>
         <div>
-          <p className="text-sm text-muted-foreground">Pendiente</p>
-          <p className="text-lg font-bold text-red-600">{formatCLP(debt.remainingAmount)}</p>
+          <p style={{ color: '#64748b', fontSize: 13, marginBottom: 4, marginTop: 0 }}>Pendiente</p>
+          <p style={{ color: '#fb923c', fontSize: 18, fontWeight: 700, margin: 0 }}>
+            {formatCLP(debt.remainingAmount)}
+          </p>
         </div>
       </div>
 
       {/* Progress bar */}
-      <div>
-        <div className="flex justify-between text-sm mb-1">
-          <span>Progreso</span>
-          <span>{progressPercent}%</span>
+      <div style={{ marginBottom: 24 }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            fontSize: 13,
+            marginBottom: 6,
+          }}
+        >
+          <span style={{ color: '#94a3b8' }}>Progreso</span>
+          <span style={{ color: '#94a3b8' }}>{progressPercent}%</span>
         </div>
-        <div className="w-full h-3 bg-muted rounded-full overflow-hidden border border-border">
+        <div
+          style={{
+            width: '100%',
+            height: 8,
+            borderRadius: 4,
+            background: '#2d3748',
+            overflow: 'hidden',
+          }}
+        >
           <div
-            className="h-full bg-green-500 rounded-full transition-all"
-            style={{ width: `${progressPercent}%` }}
+            style={{
+              width: `${progressPercent}%`,
+              height: '100%',
+              borderRadius: 4,
+              background: '#10b981',
+              transition: 'width 0.3s ease',
+            }}
           />
         </div>
       </div>
@@ -68,18 +132,41 @@ export function DebtDetailCard({ debt }: DebtDetailCardProps) {
       {/* Payment history */}
       {debt.payments && debt.payments.length > 0 && (
         <div>
-          <h4 className="font-bold mb-2">Historial de pagos</h4>
-          <div className="space-y-2">
+          <h4 style={{ fontWeight: 700, color: '#ffffff', fontSize: 15, marginBottom: 12, marginTop: 0 }}>
+            Historial de pagos
+          </h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {debt.payments.map((payment) => (
               <div
                 key={payment.id}
-                className="flex justify-between items-center p-3 bg-muted rounded-md"
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '10px 14px',
+                  background: '#0b0f19',
+                  borderRadius: 10,
+                  border: '1px solid #1e293b',
+                }}
               >
-                <span className="text-sm">{formatDate(payment.date)}</span>
-                <span className="font-medium text-green-600">{formatCLP(payment.amount)}</span>
+                <span style={{ color: '#94a3b8', fontSize: 14 }}>
+                  {formatDate(payment.date)}
+                </span>
+                <span style={{ color: '#10b981', fontWeight: 600, fontSize: 14 }}>
+                  {formatCLP(payment.amount)}
+                </span>
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* No payments message */}
+      {(!debt.payments || debt.payments.length === 0) && (
+        <div style={{ textAlign: 'center', padding: 16 }}>
+          <p style={{ color: '#64748b', fontSize: 14, margin: 0 }}>
+            Sin pagos registrados
+          </p>
         </div>
       )}
     </div>

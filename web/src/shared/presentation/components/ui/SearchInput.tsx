@@ -1,24 +1,55 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface SearchInputProps {
   value?: string;
   onChange?: (value: string) => void;
   placeholder?: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
-export function SearchInput({ value, onChange, placeholder, className = '' }: SearchInputProps) {
+export function SearchInput({ value, onChange, placeholder, className, style }: SearchInputProps) {
+  const [focused, setFocused] = useState(false);
+
   return (
-    <div className={`relative ${className}`}>
-      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
-        🔍
+    <div style={{ position: 'relative', ...style }}>
+      <span
+        style={{
+          position: 'absolute',
+          left: 12,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          color: '#64748b',
+          fontSize: 14,
+          pointerEvents: 'none',
+        }}
+      >
+        &#128269;
       </span>
       <input
         type="text"
         value={value ?? ''}
         onChange={(e) => onChange?.(e.target.value)}
         placeholder={placeholder}
-        className="flex h-10 w-full rounded-md border-2 border-input bg-background pl-9 pr-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        style={{
+          display: 'flex',
+          height: 40,
+          width: '100%',
+          background: '#1a2332',
+          border: focused ? '1px solid #3b82f6' : '1px solid #2d3748',
+          borderRadius: 8,
+          color: '#e2e8f0',
+          paddingLeft: 36,
+          paddingRight: 12,
+          paddingTop: 8,
+          paddingBottom: 8,
+          fontSize: 14,
+          outline: 'none',
+          boxSizing: 'border-box',
+          transition: 'border-color 0.15s',
+        }}
       />
     </div>
   );

@@ -1,18 +1,40 @@
 'use client';
 
 /**
- * Componente para renderizar cuentas en estructura de arbol
+ * Componente para renderizar cuentas en estructura de arbol con tarjetas dark
  */
 
-import React from 'react';
-import { Badge } from '@/shared/presentation/components/ui/Badge';
-import { Button } from '@/shared/presentation/components/ui/Button';
+import React, { useState } from 'react';
+import { Wallet, FileText, Calendar, ChevronRight, Pencil, Archive } from 'lucide-react';
 import type { Account } from '../../domain/types';
 
-const typeColors: Record<string, { bg: string; text: string; label: string }> = {
-  MAIN: { bg: '#dbeafe', text: '#1e40af', label: 'Principal' },
-  DEBT: { bg: '#fef3c7', text: '#92400e', label: 'Deuda' },
-  INSTALLMENT: { bg: '#ede9fe', text: '#5b21b6', label: 'Cuota' },
+const typeConfig: Record<
+  string,
+  {
+    color: string;
+    bgAlpha: string;
+    label: string;
+    icon: React.ElementType;
+  }
+> = {
+  MAIN: {
+    color: '#10b981',
+    bgAlpha: 'rgba(16,185,129,0.15)',
+    label: 'General',
+    icon: Wallet,
+  },
+  DEBT: {
+    color: '#fbbf24',
+    bgAlpha: 'rgba(251,191,36,0.15)',
+    label: 'Deuda',
+    icon: FileText,
+  },
+  INSTALLMENT: {
+    color: '#8b5cf6',
+    bgAlpha: 'rgba(139,92,246,0.15)',
+    label: 'Cuotas',
+    icon: Calendar,
+  },
 };
 
 interface AccountsTreeProps {
@@ -22,7 +44,7 @@ interface AccountsTreeProps {
   onSelect: (account: Account) => void;
 }
 
-function AccountNode({
+function AccountCard({
   account,
   level,
   onEdit,
@@ -35,68 +57,182 @@ function AccountNode({
   onArchive: (account: Account) => void;
   onSelect: (account: Account) => void;
 }) {
-  const typeInfo = typeColors[account.type] || typeColors.MAIN;
+  const [isHovered, setIsHovered] = useState(false);
+  const config = typeConfig[account.type] || typeConfig.MAIN;
+  const IconComponent = config.icon;
 
   return (
     <>
       <div
-        className="flex items-center justify-between py-3 px-4 border-b border-border hover:bg-muted/50 transition-colors"
-        style={{ paddingLeft: `${16 + level * 24}px` }}
+        style={{
+          marginLeft: level > 0 ? 32 * level : 0,
+          marginBottom: 8,
+          background: '#111827',
+          border: `1px solid ${isHovered ? '#2d3748' : '#1e293b'}`,
+          borderRadius: 12,
+          padding: 16,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 14,
+          cursor: 'pointer',
+          transition: 'border-color 0.2s, filter 0.2s',
+          filter: isHovered ? 'brightness(1.08)' : 'brightness(1)',
+          opacity: account.archived ? 0.6 : 1,
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={() => onSelect(account)}
       >
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          {level > 0 && (
-            <span className="text-muted-foreground text-sm">{'--'}</span>
-          )}
-          <button
-            type="button"
-            onClick={() => onSelect(account)}
-            className="font-medium text-sm hover:underline cursor-pointer truncate text-left"
+        {/* Icon circle */}
+        <div
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: '50%',
+            background: config.bgAlpha,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          <IconComponent size={20} style={{ color: config.color }} />
+        </div>
+
+        {/* Account name */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <span
+            style={{
+              color: '#f1f5f9',
+              fontWeight: 600,
+              fontSize: 15,
+              display: 'block',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
           >
             {account.name}
-          </button>
-          <span
-            className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold"
-            style={{ backgroundColor: typeInfo.bg, color: typeInfo.text }}
-          >
-            {typeInfo.label}
           </span>
           {account.archived && (
-            <Badge variant="secondary" className="text-xs">
+            <span
+              style={{
+                fontSize: 11,
+                color: '#64748b',
+                marginTop: 2,
+                display: 'block',
+              }}
+            >
               Archivada
-            </Badge>
+            </span>
           )}
         </div>
 
-        <div className="flex items-center gap-1 flex-shrink-0">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onSelect(account)}
+        {/* Type badge */}
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            padding: '4px 10px',
+            borderRadius: 20,
+            fontSize: 12,
+            fontWeight: 600,
+            background: config.bgAlpha,
+            color: config.color,
+            flexShrink: 0,
+          }}
+        >
+          {config.label}
+        </span>
+
+        {/* Action buttons (visible on hover) */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            opacity: isHovered ? 1 : 0,
+            transition: 'opacity 0.15s',
+            flexShrink: 0,
+          }}
+        >
+          <button
+            type="button"
+            title="Editar"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(account);
+            }}
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 8,
+              border: 'none',
+              background: 'rgba(148, 163, 184, 0.1)',
+              color: '#94a3b8',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'background 0.15s, color 0.15s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(148, 163, 184, 0.2)';
+              e.currentTarget.style.color = '#e2e8f0';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(148, 163, 184, 0.1)';
+              e.currentTarget.style.color = '#94a3b8';
+            }}
           >
-            Ver
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onEdit(account)}
-          >
-            Editar
-          </Button>
+            <Pencil size={15} />
+          </button>
           {!account.archived && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onArchive(account)}
+            <button
+              type="button"
+              title="Archivar"
+              onClick={(e) => {
+                e.stopPropagation();
+                onArchive(account);
+              }}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                border: 'none',
+                background: 'rgba(148, 163, 184, 0.1)',
+                color: '#94a3b8',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'background 0.15s, color 0.15s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(251, 191, 36, 0.15)';
+                e.currentTarget.style.color = '#fbbf24';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(148, 163, 184, 0.1)';
+                e.currentTarget.style.color = '#94a3b8';
+              }}
             >
-              Archivar
-            </Button>
+              <Archive size={15} />
+            </button>
           )}
         </div>
+
+        {/* Chevron right */}
+        <ChevronRight
+          size={20}
+          style={{ color: '#475569', flexShrink: 0 }}
+        />
       </div>
 
+      {/* Render children */}
       {account.children &&
         account.children.map((child) => (
-          <AccountNode
+          <AccountCard
             key={child.id}
             account={child}
             level={level + 1}
@@ -112,21 +248,27 @@ function AccountNode({
 export function AccountsTree({ accounts, onEdit, onArchive, onSelect }: AccountsTreeProps) {
   if (accounts.length === 0) {
     return (
-      <div className="text-center py-12 text-muted-foreground">
-        <p className="text-lg font-medium">No se encontraron cuentas</p>
-        <p className="text-sm mt-1">Crea una nueva cuenta para comenzar</p>
+      <div
+        style={{
+          textAlign: 'center',
+          padding: '48px 0',
+          color: '#94a3b8',
+        }}
+      >
+        <p style={{ fontSize: 16, fontWeight: 500, margin: 0 }}>
+          No se encontraron cuentas
+        </p>
+        <p style={{ fontSize: 14, marginTop: 4, color: '#64748b' }}>
+          Crea una nueva cuenta para comenzar
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="border-2 border-foreground rounded-lg overflow-hidden">
-      <div className="flex items-center justify-between py-2 px-4 bg-muted/50 border-b-2 border-foreground">
-        <span className="text-sm font-bold">Nombre</span>
-        <span className="text-sm font-bold">Acciones</span>
-      </div>
+    <div>
       {accounts.map((account) => (
-        <AccountNode
+        <AccountCard
           key={account.id}
           account={account}
           level={0}

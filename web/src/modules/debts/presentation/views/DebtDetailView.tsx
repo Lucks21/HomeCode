@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { getErrorMessage } from '@/shared/utils';
-import { Button } from '@/shared/presentation/components/ui/Button';
 import { DebtDetailCard } from '../components/DebtDetailCard';
 import { DebtPaymentModal } from '../components/DebtPaymentModal';
 import { useDebtDetail } from '../hooks/useDebtDetail';
@@ -34,40 +33,98 @@ export function DebtDetailView({ debtId, onBack }: DebtDetailViewProps) {
   };
 
   if (isLoading && !debt) {
-    return <div className="p-8 text-center text-muted-foreground">Cargando...</div>;
+    return (
+      <div
+        style={{
+          padding: 32,
+          textAlign: 'center',
+          color: '#64748b',
+          fontSize: 14,
+        }}
+      >
+        Cargando...
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="p-4 border-2 border-destructive bg-destructive/10 text-destructive">
-        <p className="font-bold">Error:</p>
-        <p>{error}</p>
+      <div
+        style={{
+          padding: 16,
+          background: 'rgba(239,68,68,0.1)',
+          border: '1px solid rgba(239,68,68,0.3)',
+          borderRadius: 12,
+          color: '#ef4444',
+        }}
+      >
+        <p style={{ fontWeight: 700, marginBottom: 4 }}>Error:</p>
+        <p style={{ margin: 0 }}>{error}</p>
       </div>
     );
   }
 
   if (!debt) {
-    return <div className="p-8 text-center text-muted-foreground">Deuda no encontrada</div>;
+    return (
+      <div
+        style={{
+          padding: 32,
+          textAlign: 'center',
+          color: '#64748b',
+          fontSize: 14,
+        }}
+      >
+        Deuda no encontrada
+      </div>
+    );
   }
 
   return (
     <>
-      <div className="flex items-center gap-4 mb-4">
+      {/* Header */}
+      <div style={{ marginBottom: 24 }}>
         {onBack && (
-          <Button variant="outline" onClick={onBack}>
-            Volver
-          </Button>
+          <button
+            onClick={onBack}
+            style={{
+              background: 'transparent',
+              border: '1px solid #1e293b',
+              color: '#94a3b8',
+              borderRadius: 8,
+              padding: '8px 20px',
+              fontSize: 14,
+              cursor: 'pointer',
+              marginBottom: 16,
+              display: 'block',
+            }}
+          >
+            ← Volver
+          </button>
         )}
-        <h1 className="text-2xl font-bold">Detalle de Deuda</h1>
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: '#ffffff', margin: 0 }}>
+          Detalle de Deuda
+        </h1>
       </div>
 
       <DebtDetailCard debt={debt} />
 
       {debt.status !== 'PAID' && (
-        <div className="mt-4">
-          <Button onClick={() => setIsPaymentModalOpen(true)}>
+        <div style={{ marginTop: 16 }}>
+          <button
+            onClick={() => setIsPaymentModalOpen(true)}
+            style={{
+              border: '1px solid #10b981',
+              color: '#10b981',
+              background: 'transparent',
+              borderRadius: 8,
+              padding: '10px 24px',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
             Registrar Pago
-          </Button>
+          </button>
         </div>
       )}
 

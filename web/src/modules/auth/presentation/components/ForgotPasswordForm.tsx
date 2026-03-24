@@ -28,12 +28,31 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="bg-white shadow-lg rounded-xl p-8 border border-gray-100">
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+    <div style={{ width: '100%', maxWidth: 448, margin: '0 auto' }}>
+      <div
+        style={{
+          background: '#111827',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
+          borderRadius: 12,
+          padding: 32,
+          border: '1px solid #1e293b',
+        }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 64,
+              height: 64,
+              background: 'rgba(16, 185, 129, 0.15)',
+              borderRadius: '50%',
+              marginBottom: 16,
+            }}
+          >
             <svg
-              className="w-8 h-8 text-blue-600"
+              style={{ width: 32, height: 32, color: '#10b981' }}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -46,17 +65,31 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
               />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-800">¿Olvidaste tu contraseña?</h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f1f5f9', margin: '0 0 4px' }}>
+            ¿Olvidaste tu contraseña?
+          </h2>
+          <p style={{ fontSize: '0.875rem', color: '#64748b', marginTop: 4, marginBottom: 0 }}>
             Ingresa tu email y te enviaremos un código para restablecer tu contraseña
           </p>
         </div>
 
         {success ? (
-          <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-md mb-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+          <div
+            style={{
+              background: 'rgba(16, 185, 129, 0.1)',
+              borderLeft: '4px solid #10b981',
+              padding: 16,
+              borderRadius: 6,
+              marginBottom: 16,
+            }}
+          >
+            <div style={{ display: 'flex' }}>
+              <div style={{ flexShrink: 0 }}>
+                <svg
+                  style={{ height: 20, width: 20, color: '#10b981' }}
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
                   <path
                     fillRule="evenodd"
                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -64,23 +97,43 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
                   />
                 </svg>
               </div>
-              <div className="ml-3">
-                <p className="text-sm text-green-700 font-medium">
+              <div style={{ marginLeft: 12 }}>
+                <p style={{ fontSize: '0.875rem', color: '#a7f3d0', fontWeight: 500, margin: 0 }}>
                   ¡Código enviado! Revisa tu correo electrónico.
                 </p>
               </div>
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label
+                htmlFor="email"
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  color: '#e2e8f0',
+                  marginBottom: 8,
+                }}
+              >
                 Correo electrónico
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div style={{ position: 'relative' }}>
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    paddingLeft: 12,
+                    display: 'flex',
+                    alignItems: 'center',
+                    pointerEvents: 'none',
+                  }}
+                >
                   <svg
-                    className="h-5 w-5 text-gray-400"
+                    style={{ height: 20, width: 20, color: '#64748b' }}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -100,7 +153,22 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed transition-colors"
+                  style={{
+                    width: '100%',
+                    paddingLeft: 40,
+                    paddingRight: 12,
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    border: '1px solid #2d3748',
+                    borderRadius: 8,
+                    outline: 'none',
+                    background: isLoading ? '#0b0f19' : '#1a2332',
+                    color: '#e2e8f0',
+                    fontSize: '0.95rem',
+                    boxSizing: 'border-box',
+                  }}
+                  onFocus={(e) => (e.currentTarget.style.boxShadow = '0 0 0 2px #10b981')}
+                  onBlur={(e) => (e.currentTarget.style.boxShadow = 'none')}
                   placeholder="tu@email.com"
                   autoComplete="email"
                 />
@@ -108,10 +176,21 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
             </div>
 
             {error && (
-              <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+              <div
+                style={{
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  borderLeft: '4px solid #ef4444',
+                  padding: 16,
+                  borderRadius: 6,
+                }}
+              >
+                <div style={{ display: 'flex' }}>
+                  <div style={{ flexShrink: 0 }}>
+                    <svg
+                      style={{ height: 20, width: 20, color: '#ef4444' }}
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
                       <path
                         fillRule="evenodd"
                         d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -119,8 +198,10 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
                       />
                     </svg>
                   </div>
-                  <div className="ml-3">
-                    <p className="text-sm text-red-700 font-medium">{error}</p>
+                  <div style={{ marginLeft: 12 }}>
+                    <p style={{ fontSize: '0.875rem', color: '#fca5a5', fontWeight: 500, margin: 0 }}>
+                      {error}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -129,17 +210,40 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
             <button
               type="submit"
               disabled={isLoading || !email}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-500 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              style={{
+                width: '100%',
+                background: isLoading || !email ? '#1e293b' : '#10b981',
+                color: isLoading || !email ? '#64748b' : '#ffffff',
+                fontWeight: 600,
+                padding: '12px 16px',
+                borderRadius: 8,
+                border: 'none',
+                cursor: isLoading || !email ? 'not-allowed' : 'pointer',
+                fontSize: '0.95rem',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                if (!isLoading && email) e.currentTarget.style.background = '#059669';
+              }}
+              onMouseLeave={(e) => {
+                if (!isLoading && email) e.currentTarget.style.background = '#10b981';
+              }}
             >
               {isLoading ? (
-                <span className="flex items-center justify-center">
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    style={{
+                      width: 20,
+                      height: 20,
+                      marginRight: 12,
+                      animation: 'spin 1s linear infinite',
+                    }}
                     fill="none"
                     viewBox="0 0 24 24"
                   >
                     <circle
-                      className="opacity-25"
+                      style={{ opacity: 0.25 }}
                       cx="12"
                       cy="12"
                       r="10"
@@ -147,7 +251,7 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
                       strokeWidth="4"
                     ></circle>
                     <path
-                      className="opacity-75"
+                      style={{ opacity: 0.75 }}
                       fill="currentColor"
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
@@ -158,13 +262,22 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
                 'Enviar código de verificación'
               )}
             </button>
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           </form>
         )}
 
-        <div className="mt-6 text-center">
+        <div style={{ marginTop: 24, textAlign: 'center' }}>
           <a
             href="/login"
-            className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+            style={{
+              fontSize: '0.875rem',
+              color: '#10b981',
+              fontWeight: 500,
+              textDecoration: 'none',
+              transition: 'color 0.2s',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = '#059669')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#10b981')}
           >
             Volver al inicio de sesión
           </a>

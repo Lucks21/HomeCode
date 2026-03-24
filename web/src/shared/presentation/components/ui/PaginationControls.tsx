@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface PaginationControlsProps {
   currentPage: number;
@@ -7,37 +7,83 @@ interface PaginationControlsProps {
   totalItems?: number;
   itemsPerPage?: number;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export function PaginationControls({
   currentPage,
   totalPages,
   onPageChange,
-  className = '',
+  className,
+  style,
 }: PaginationControlsProps) {
   if (totalPages <= 1) return null;
 
+  const prevDisabled = currentPage <= 1;
+  const nextDisabled = currentPage >= totalPages;
+
   return (
-    <div className={`flex items-center justify-center gap-2 mt-4 ${className}`}>
-      <button
-        type="button"
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+        marginTop: 16,
+        ...style,
+      }}
+    >
+      <PaginationButton
         onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage <= 1}
-        className="px-3 py-1 rounded border-2 border-foreground text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted"
+        disabled={prevDisabled}
       >
-        ← Anterior
-      </button>
-      <span className="text-sm px-2">
-        Página {currentPage} de {totalPages}
+        &larr; Anterior
+      </PaginationButton>
+      <span style={{ fontSize: 14, color: '#94a3b8', padding: '0 8px' }}>
+        Pagina {currentPage} de {totalPages}
       </span>
-      <button
-        type="button"
+      <PaginationButton
         onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage >= totalPages}
-        className="px-3 py-1 rounded border-2 border-foreground text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted"
+        disabled={nextDisabled}
       >
-        Siguiente →
-      </button>
+        Siguiente &rarr;
+      </PaginationButton>
     </div>
+  );
+}
+
+function PaginationButton({
+  children,
+  onClick,
+  disabled,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  disabled: boolean;
+}) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: hovered && !disabled ? 'rgba(255,255,255,0.05)' : '#111827',
+        border: '1px solid #2d3748',
+        color: '#e2e8f0',
+        borderRadius: 8,
+        padding: '4px 12px',
+        fontSize: 14,
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? 0.5 : 1,
+        transition: 'background 0.15s, opacity 0.15s',
+        outline: 'none',
+      }}
+    >
+      {children}
+    </button>
   );
 }
