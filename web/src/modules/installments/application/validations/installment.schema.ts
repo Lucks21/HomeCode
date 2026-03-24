@@ -19,6 +19,15 @@ export const installmentSchema = z.object({
     message: 'El valor de cuota multiplicado por el número de cuotas debe ser mayor o igual al monto total',
     path: ['installmentValue'],
   },
+).refine(
+  (data) => {
+    if (data.installmentValue === undefined) return true;
+    return data.installmentValue <= data.totalAmount;
+  },
+  {
+    message: 'El valor de una cuota no puede ser mayor al monto total de la deuda',
+    path: ['installmentValue'],
+  },
 );
 
 export type InstallmentFormData = z.infer<typeof installmentSchema>;

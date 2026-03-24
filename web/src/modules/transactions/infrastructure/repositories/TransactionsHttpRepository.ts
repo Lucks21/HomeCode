@@ -20,6 +20,9 @@ export class TransactionsHttpRepository {
     if (filters?.dateTo) {
       params.append('dateTo', filters.dateTo);
     }
+    if (filters?.includeArchived) {
+      params.append('includeArchived', 'true');
+    }
 
     const query = params.toString();
     const url = query ? `${this.basePath}?${query}` : this.basePath;
@@ -43,6 +46,10 @@ export class TransactionsHttpRepository {
 
   async archive(id: number): Promise<void> {
     await httpClient.patch<ApiResponse<void>>(`${this.basePath}/${id}/archive`, {});
+  }
+
+  async unarchive(id: number): Promise<void> {
+    await httpClient.patch<ApiResponse<void>>(`${this.basePath}/${id}/unarchive`, {});
   }
 }
 

@@ -10,6 +10,13 @@ const DEFAULT_ADMIN = {
   roleName: 'ADMIN',
 };
 
+const SECOND_USER = {
+  name: 'lucks21',
+  email: 'lucks21@homecode.com',
+  password: 'cuenta123',
+  roleName: 'ADMIN',
+};
+
 const PERMISSIONS = [
   { code: 'CREATE_USER', description: 'Crear usuarios' },
   { code: 'READ_USER', description: 'Ver usuarios' },
@@ -91,6 +98,41 @@ async function main() {
   console.log(`Usuario: ${DEFAULT_ADMIN.email}`);
   console.log(`Password: ${DEFAULT_ADMIN.password}`);
   console.log(`Rol: ${DEFAULT_ADMIN.roleName}`);
+
+  // Segundo usuario
+  const secondPasswordHash = await bcrypt.hash(SECOND_USER.password, 10);
+  const secondUser = await prisma.user.upsert({
+    where: { email: SECOND_USER.email },
+    update: {
+      name: SECOND_USER.name,
+      passwordHash: secondPasswordHash,
+      active: true,
+    },
+    create: {
+      name: SECOND_USER.name,
+      email: SECOND_USER.email,
+      passwordHash: secondPasswordHash,
+      active: true,
+    },
+  });
+
+  await prisma.userRole.upsert({
+    where: {
+      userId_roleId: {
+        userId: secondUser.id,
+        roleId: adminRole.id,
+      },
+    },
+    update: {},
+    create: {
+      userId: secondUser.id,
+      roleId: adminRole.id,
+    },
+  });
+
+  console.log(`Usuario: ${SECOND_USER.email}`);
+  console.log(`Password: ${SECOND_USER.password}`);
+  console.log(`Rol: ${SECOND_USER.roleName}`);
 }
 
 main()

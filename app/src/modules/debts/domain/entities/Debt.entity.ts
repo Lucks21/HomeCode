@@ -49,6 +49,16 @@ export class Debt {
     this.archivedAt = new Date();
   }
 
+  unarchive(): void {
+    this.archived = false;
+    this.archivedAt = null;
+  }
+
+  updateInfo(description: string, date: Date): void {
+    this.description = description;
+    this.date = date;
+  }
+
   toPrimitives() {
     return {
       id: this.id,

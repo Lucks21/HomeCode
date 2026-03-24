@@ -6,6 +6,8 @@ import { RegisterDebtPaymentUseCase } from '../application/use-cases/RegisterDeb
 import { GetDebtDetailUseCase } from '../application/use-cases/GetDebtDetail.usecase';
 import { ListDebtsUseCase } from '../application/use-cases/ListDebts.usecase';
 import { ArchiveDebtUseCase } from '../application/use-cases/ArchiveDebt.usecase';
+import { UpdateDebtUseCase } from '../application/use-cases/UpdateDebt.usecase';
+import { UnarchiveDebtUseCase } from '../application/use-cases/UnarchiveDebt.usecase';
 import { DebtsController } from '../interfaces/http/controllers/debts.controller';
 
 @Module({
@@ -17,6 +19,8 @@ import { DebtsController } from '../interfaces/http/controllers/debts.controller
     GetDebtDetailUseCase,
     ListDebtsUseCase,
     ArchiveDebtUseCase,
+    UpdateDebtUseCase,
+    UnarchiveDebtUseCase,
   ],
   exports: [DebtsPersistenceModule],
 })

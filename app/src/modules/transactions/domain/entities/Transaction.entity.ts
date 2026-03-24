@@ -35,6 +35,11 @@ export class Transaction {
     this.archivedAt = new Date();
   }
 
+  unarchive(): void {
+    this.archived = false;
+    this.archivedAt = null;
+  }
+
   updateInfo(description: string, amount: number, type: TransactionType, date: Date): void {
     this.description = description;
     this.amount = amount;

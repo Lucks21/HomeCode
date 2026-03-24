@@ -140,7 +140,14 @@ export function TransactionFormModal({
                 <FormItem>
                   <FormLabel className="font-bold">Descripción *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ej: Pago de arriendo" {...field} />
+                    <Input
+                      placeholder="Ej: Pago de arriendo"
+                      {...field}
+                      onChange={(e) => {
+                        e.target.value = e.target.value.toUpperCase();
+                        field.onChange(e);
+                      }}
+                    />
                   </FormControl>
                   <FormMessage>{form.formState.errors.description?.message}</FormMessage>
                 </FormItem>

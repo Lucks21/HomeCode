@@ -9,6 +9,18 @@ import { accountsRepository } from '../../infrastructure/repositories/AccountsHt
 import type { Account } from '../../domain/types';
 import type { AccountFormData } from '../../application/validations/account.schema';
 
+function flattenAccounts(accounts: Account[]): Account[] {
+  const result: Account[] = [];
+  for (const account of accounts) {
+    const { children, ...rest } = account;
+    result.push(rest);
+    if (children && children.length > 0) {
+      result.push(...flattenAccounts(children));
+    }
+  }
+  return result;
+}
+
 export function useAccounts() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +31,7 @@ export function useAccounts() {
     setError(null);
     try {
       const data = await accountsRepository.getAll(includeArchived);
-      setAccounts(data);
+      setAccounts(flattenAccounts(data));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar cuentas');
       console.error('Error fetching accounts:', err);

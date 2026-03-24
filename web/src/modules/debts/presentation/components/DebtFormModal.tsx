@@ -30,12 +30,14 @@ import {
 } from '@/shared/presentation/components/ui/Select';
 
 import type { Account } from '@/modules/accounts/domain/types';
+import type { Debt } from '../../domain/types';
 import { debtSchema, type DebtFormData } from '../../application/validations/debt.schema';
 
 interface DebtFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: DebtFormData) => Promise<void>;
+  debt?: Debt | null;
   accounts: Account[];
   isLoading?: boolean;
 }
@@ -44,9 +46,12 @@ export function DebtFormModal({
   isOpen,
   onClose,
   onSubmit,
+  debt,
   accounts,
   isLoading = false,
 }: DebtFormModalProps) {
+  const isEditing = !!debt;
+
   const form = useForm<DebtFormData>({
     resolver: zodResolver(debtSchema),
     defaultValues: {
@@ -58,7 +63,15 @@ export function DebtFormModal({
   });
 
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) return;
+    if (debt) {
+      form.reset({
+        accountId: debt.accountId,
+        description: debt.description,
+        amount: debt.amount,
+        date: debt.date.substring(0, 10),
+      });
+    } else {
       form.reset({
         accountId: undefined,
         description: '',
@@ -66,7 +79,7 @@ export function DebtFormModal({
         date: new Date().toISOString().substring(0, 10),
       });
     }
-  }, [isOpen, form]);
+  }, [isOpen, debt, form]);
 
   const handleSubmit = async (data: DebtFormData) => {
     await onSubmit(data);
@@ -77,7 +90,9 @@ export function DebtFormModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-lg border-2 border-foreground p-0 gap-0 max-h-[90vh] overflow-y-auto">
         <DialogHeader className="p-6 border-b-2 border-foreground sticky top-0 bg-background z-10">
-          <DialogTitle className="text-xl font-bold">Nueva Deuda</DialogTitle>
+          <DialogTitle className="text-xl font-bold">
+            {isEditing ? 'Editar Deuda' : 'Nueva Deuda'}
+          </DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -92,6 +107,7 @@ export function DebtFormModal({
                   <Select
                     onValueChange={(value) => field.onChange(Number(value))}
                     value={field.value?.toString()}
+                    disabled={isEditing}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -119,7 +135,14 @@ export function DebtFormModal({
                 <FormItem>
                   <FormLabel className="font-bold">Descripción *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ej: Préstamo personal" {...field} />
+                    <Input
+                      placeholder="Ej: Préstamo personal"
+                      {...field}
+                      onChange={(e) => {
+                        e.target.value = e.target.value.toUpperCase();
+                        field.onChange(e);
+                      }}
+                    />
                   </FormControl>
                   <FormMessage>{form.formState.errors.description?.message}</FormMessage>
                 </FormItem>
@@ -138,6 +161,7 @@ export function DebtFormModal({
                       type="number"
                       placeholder="0"
                       min={1}
+                      disabled={isEditing}
                       {...field}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
@@ -173,6 +197,8 @@ export function DebtFormModal({
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Guardando...
                   </>
+                ) : isEditing ? (
+                  'Guardar Cambios'
                 ) : (
                   'Crear Deuda'
                 )}

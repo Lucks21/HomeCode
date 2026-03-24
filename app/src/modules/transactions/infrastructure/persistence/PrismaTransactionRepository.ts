@@ -82,8 +82,11 @@ export class PrismaTransactionRepository implements TransactionRepository {
   ): Promise<{ items: Transaction[]; total: number }> {
     const where: any = {
       accountId: { in: accountIds },
-      archived: false,
     };
+
+    if (!filters.includeArchived) {
+      where.archived = false;
+    }
 
     if (filters.type) {
       where.type = filters.type;

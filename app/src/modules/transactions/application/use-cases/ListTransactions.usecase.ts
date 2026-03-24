@@ -13,6 +13,7 @@ export interface ListTransactionsFilters {
   dateTo?: Date;
   page?: number;
   perPage?: number;
+  includeArchived?: boolean;
 }
 
 @Injectable()
@@ -48,6 +49,7 @@ export class ListTransactionsUseCase {
       dateTo: filters.dateTo,
       page: filters.page,
       perPage: filters.perPage,
+      includeArchived: filters.includeArchived,
     };
 
     const result = await this.transactionRepository.findByFilters(accountIds, repoFilters);

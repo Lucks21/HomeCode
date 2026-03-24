@@ -1,4 +1,4 @@
-import { IsOptional, IsEnum, IsDateString, IsNumberString } from 'class-validator';
+import { IsOptional, IsEnum, IsDateString, IsNumberString, IsBooleanString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ListTransactionsQueryDto {
@@ -31,4 +31,9 @@ export class ListTransactionsQueryDto {
   @IsOptional()
   @IsNumberString({}, { message: 'Los registros por página deben ser un número' })
   perPage?: string;
+
+  @ApiProperty({ description: 'Incluir archivados', required: false })
+  @IsOptional()
+  @IsBooleanString()
+  includeArchived?: string;
 }

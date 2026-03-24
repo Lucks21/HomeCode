@@ -19,9 +19,13 @@ import { RegisterDebtPaymentUseCase } from '../../../application/use-cases/Regis
 import { GetDebtDetailUseCase } from '../../../application/use-cases/GetDebtDetail.usecase';
 import { ListDebtsUseCase } from '../../../application/use-cases/ListDebts.usecase';
 import { ArchiveDebtUseCase } from '../../../application/use-cases/ArchiveDebt.usecase';
+import { UpdateDebtUseCase } from '../../../application/use-cases/UpdateDebt.usecase';
+import { UnarchiveDebtUseCase } from '../../../application/use-cases/UnarchiveDebt.usecase';
 import { CreateDebtCommand } from '../../../application/commands/CreateDebtCommand';
+import { UpdateDebtCommand } from '../../../application/commands/UpdateDebtCommand';
 import { RegisterDebtPaymentCommand } from '../../../application/commands/RegisterDebtPaymentCommand';
 import { CreateDebtRequestDto } from '../dto/request/CreateDebtRequest.dto';
+import { UpdateDebtRequestDto } from '../dto/request/UpdateDebtRequest.dto';
 import { RegisterDebtPaymentRequestDto } from '../dto/request/RegisterDebtPaymentRequest.dto';
 import { ListDebtsQueryDto } from '../dto/request/ListDebtsQuery.dto';
 
@@ -36,6 +40,8 @@ export class DebtsController {
     private readonly getDebtDetailUseCase: GetDebtDetailUseCase,
     private readonly listDebtsUseCase: ListDebtsUseCase,
     private readonly archiveDebtUseCase: ArchiveDebtUseCase,
+    private readonly updateDebtUseCase: UpdateDebtUseCase,
+    private readonly unarchiveDebtUseCase: UnarchiveDebtUseCase,
   ) {}
 
   @Post()
@@ -85,6 +91,7 @@ export class DebtsController {
       dateTo: query.dateTo,
       page: query.page,
       perPage: query.perPage,
+      includeArchived: query.includeArchived === 'true',
     });
 
     return {
@@ -111,6 +118,25 @@ export class DebtsController {
     };
   }
 
+  @Patch(':id')
+  @ApiOperation({ summary: 'Editar deuda', description: 'Edita la descripción y/o fecha de una deuda.' })
+  @ApiParam({ name: 'id', type: Number, description: 'ID de la deuda' })
+  @ApiResponse({ status: 200, description: 'Deuda actualizada exitosamente' })
+  @ApiResponse({ status: 404, description: 'Deuda no encontrada' })
+  async updateDebt(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateDebtRequestDto,
+    @Request() req: any,
+  ) {
+    const command = new UpdateDebtCommand(body.description, body.date);
+    const debt = await this.updateDebtUseCase.execute(id, command, req.user.id);
+
+    return {
+      message: 'Deuda actualizada exitosamente',
+      data: debt.toPrimitives(),
+    };
+  }
+
   @Patch(':id/archive')
   @ApiOperation({ summary: 'Archivar deuda', description: 'Archiva una deuda pagada (eliminación lógica).' })
   @ApiParam({ name: 'id', type: Number, description: 'ID de la deuda' })
@@ -121,6 +147,20 @@ export class DebtsController {
 
     return {
       message: 'Deuda archivada exitosamente',
+      data: debt.toPrimitives(),
+    };
+  }
+
+  @Patch(':id/unarchive')
+  @ApiOperation({ summary: 'Desarchivar deuda', description: 'Desarchiva una deuda.' })
+  @ApiParam({ name: 'id', type: Number, description: 'ID de la deuda' })
+  @ApiResponse({ status: 200, description: 'Deuda desarchivada' })
+  @ApiResponse({ status: 404, description: 'Deuda no encontrada' })
+  async unarchiveDebt(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
+    const debt = await this.unarchiveDebtUseCase.execute(id, req.user.id);
+
+    return {
+      message: 'Deuda desarchivada exitosamente',
       data: debt.toPrimitives(),
     };
   }

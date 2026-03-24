@@ -76,6 +76,40 @@ export function useDebts() {
     [],
   );
 
+  const unarchiveDebt = useCallback(
+    async (id: number) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        await debtsRepository.unarchive(id);
+        await fetchDebts();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error al desarchivar deuda');
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [fetchDebts],
+  );
+
+  const updateDebt = useCallback(
+    async (id: number, data: { description?: string; date?: string }) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        await debtsRepository.update(id, data);
+        await fetchDebts();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error al actualizar deuda');
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [fetchDebts],
+  );
+
   useEffect(() => {
     fetchDebts();
   }, [fetchDebts]);
@@ -86,7 +120,9 @@ export function useDebts() {
     error,
     fetchDebts,
     createDebt,
+    updateDebt,
     registerPayment,
     archiveDebt,
+    unarchiveDebt,
   };
 }

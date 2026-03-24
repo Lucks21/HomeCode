@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsInt, IsEnum } from 'class-validator';
+import { IsOptional, IsString, IsInt, IsEnum, IsBooleanString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
@@ -39,4 +39,9 @@ export class ListDebtsQueryDto {
   @Type(() => Number)
   @IsInt({ message: 'Los elementos por página deben ser un número entero' })
   perPage?: number;
+
+  @ApiProperty({ description: 'Incluir archivados', required: false })
+  @IsOptional()
+  @IsBooleanString()
+  includeArchived?: string;
 }

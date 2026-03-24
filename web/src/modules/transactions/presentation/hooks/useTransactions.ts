@@ -75,6 +75,23 @@ export function useTransactions() {
     [],
   );
 
+  const unarchiveTransaction = useCallback(
+    async (id: number) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        await transactionsRepository.unarchive(id);
+        await fetchTransactions();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error al desarchivar transacción');
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [fetchTransactions],
+  );
+
   useEffect(() => {
     fetchTransactions();
   }, [fetchTransactions]);
@@ -87,5 +104,6 @@ export function useTransactions() {
     createTransaction,
     updateTransaction,
     archiveTransaction,
+    unarchiveTransaction,
   };
 }

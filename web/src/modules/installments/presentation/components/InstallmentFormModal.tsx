@@ -140,7 +140,14 @@ export function InstallmentFormModal({
                 <FormItem>
                   <FormLabel className="font-bold">Descripción *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ej: Compra en 12 cuotas" {...field} />
+                    <Input
+                      placeholder="Ej: Compra en 12 cuotas"
+                      {...field}
+                      onChange={(e) => {
+                        e.target.value = e.target.value.toUpperCase();
+                        field.onChange(e);
+                      }}
+                    />
                   </FormControl>
                   <FormMessage>{form.formState.errors.description?.message}</FormMessage>
                 </FormItem>

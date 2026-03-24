@@ -9,6 +9,8 @@ interface DebtsTableProps {
   onViewDetail: (debt: Debt) => void;
   onRegisterPayment: (debt: Debt) => void;
   onArchive: (debt: Debt) => void;
+  onEdit: (debt: Debt) => void;
+  onUnarchive?: (debt: Debt) => void;
 }
 
 const formatCLP = (amount: number) =>
@@ -25,7 +27,7 @@ const statusStyles: Record<string, { label: string; background: string; color: s
   PAID: { label: 'Pagada', background: 'rgba(16,185,129,0.15)', color: '#10b981' },
 };
 
-export function DebtsTable({ debts, accounts, onViewDetail, onRegisterPayment, onArchive }: DebtsTableProps) {
+export function DebtsTable({ debts, accounts, onViewDetail, onRegisterPayment, onArchive, onEdit, onUnarchive }: DebtsTableProps) {
   const getAccountName = (accountId: number): string => {
     const account = accounts.find((a) => a.id === accountId);
     return account?.name ?? 'Sin cuenta';
@@ -175,54 +177,107 @@ export function DebtsTable({ debts, accounts, onViewDetail, onRegisterPayment, o
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              {debt.status !== 'PAID' ? (
-                <button
-                  onClick={() => onRegisterPayment(debt)}
-                  style={{
-                    flex: 1,
-                    border: '1px solid #10b981',
-                    color: '#10b981',
-                    background: 'transparent',
-                    borderRadius: 8,
-                    padding: '8px 16px',
-                    fontSize: 14,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'background 0.2s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.target as HTMLButtonElement).style.background = 'rgba(16,185,129,0.1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.target as HTMLButtonElement).style.background = 'transparent';
-                  }}
-                >
-                  Registrar Pago
-                </button>
+              {debt.archived ? (
+                onUnarchive && (
+                  <button
+                    onClick={() => onUnarchive(debt)}
+                    style={{
+                      flex: 1,
+                      border: '1px solid #10b981',
+                      color: '#10b981',
+                      background: 'transparent',
+                      borderRadius: 8,
+                      padding: '8px 16px',
+                      fontSize: 14,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'background 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.target as HTMLButtonElement).style.background = 'rgba(16,185,129,0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.target as HTMLButtonElement).style.background = 'transparent';
+                    }}
+                  >
+                    Desarchivar
+                  </button>
+                )
               ) : (
-                <button
-                  onClick={() => onArchive(debt)}
-                  style={{
-                    flex: 1,
-                    border: '1px solid #64748b',
-                    color: '#64748b',
-                    background: 'transparent',
-                    borderRadius: 8,
-                    padding: '8px 16px',
-                    fontSize: 14,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'background 0.2s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.target as HTMLButtonElement).style.background = 'rgba(100,116,139,0.1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.target as HTMLButtonElement).style.background = 'transparent';
-                  }}
-                >
-                  Archivar
-                </button>
+                <>
+                  <button
+                    onClick={() => onEdit(debt)}
+                    style={{
+                      flex: 1,
+                      border: '1px solid #3b82f6',
+                      color: '#3b82f6',
+                      background: 'transparent',
+                      borderRadius: 8,
+                      padding: '8px 16px',
+                      fontSize: 14,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'background 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.target as HTMLButtonElement).style.background = 'rgba(59,130,246,0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.target as HTMLButtonElement).style.background = 'transparent';
+                    }}
+                  >
+                    Editar
+                  </button>
+                  {debt.status !== 'PAID' ? (
+                    <button
+                      onClick={() => onRegisterPayment(debt)}
+                      style={{
+                        flex: 1,
+                        border: '1px solid #10b981',
+                        color: '#10b981',
+                        background: 'transparent',
+                        borderRadius: 8,
+                        padding: '8px 16px',
+                        fontSize: 14,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        transition: 'background 0.2s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.target as HTMLButtonElement).style.background = 'rgba(16,185,129,0.1)';
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.target as HTMLButtonElement).style.background = 'transparent';
+                      }}
+                    >
+                      Registrar Pago
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => onArchive(debt)}
+                      style={{
+                        flex: 1,
+                        border: '1px solid #64748b',
+                        color: '#64748b',
+                        background: 'transparent',
+                        borderRadius: 8,
+                        padding: '8px 16px',
+                        fontSize: 14,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        transition: 'background 0.2s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.target as HTMLButtonElement).style.background = 'rgba(100,116,139,0.1)';
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.target as HTMLButtonElement).style.background = 'transparent';
+                      }}
+                    >
+                      Archivar
+                    </button>
+                  )}
+                </>
               )}
             </div>
           </div>

@@ -16,6 +16,7 @@ const defaultFilters: TransactionFilters = {
   type: 'TODOS',
   dateFrom: '',
   dateTo: '',
+  includeArchived: false,
 };
 
 const headerStyle: React.CSSProperties = {
@@ -76,6 +77,7 @@ export function TransactionsView() {
     createTransaction,
     updateTransaction,
     archiveTransaction,
+    unarchiveTransaction,
   } = useTransactions();
 
   // Fetch accounts for selectors
@@ -91,7 +93,12 @@ export function TransactionsView() {
     loadAccounts();
   }, []);
 
-  // Apply filters
+  // Refetch when includeArchived changes
+  useEffect(() => {
+    fetchTransactions(filters.includeArchived ? { includeArchived: true } : undefined);
+  }, [filters.includeArchived, fetchTransactions]);
+
+  // Apply client-side filters
   const filteredTransactions = useMemo(() => {
     return transactions.filter((t) => {
       if (filters.accountId && t.accountId !== filters.accountId) return false;
@@ -103,7 +110,7 @@ export function TransactionsView() {
   }, [transactions, filters]);
 
   const handleClearFilters = () => {
-    setFilters(defaultFilters);
+    setFilters({ ...defaultFilters, includeArchived: filters.includeArchived });
   };
 
   const handleCreate = () => {
@@ -119,15 +126,28 @@ export function TransactionsView() {
   const handleArchive = async (transaction: Transaction) => {
     try {
       await archiveTransaction(transaction.id);
+      if (filters.includeArchived) {
+        await fetchTransactions({ includeArchived: true });
+      }
     } catch (err) {
       console.error('Error al archivar transaccion:', err);
+    }
+  };
+
+  const handleUnarchive = async (transaction: Transaction) => {
+    try {
+      await unarchiveTransaction(transaction.id);
+      await fetchTransactions({ includeArchived: filters.includeArchived });
+    } catch (err) {
+      console.error('Error al desarchivar transaccion:', err);
     }
   };
 
   const handleFormSubmit = async (data: TransactionFormData) => {
     try {
       if (selectedTransaction) {
-        await updateTransaction(selectedTransaction.id, data);
+        const { accountId, ...updateData } = data;
+        await updateTransaction(selectedTransaction.id, updateData);
       } else {
         await createTransaction(data);
       }
@@ -168,6 +188,17 @@ export function TransactionsView() {
           onClearFilters={handleClearFilters}
           accounts={accounts}
         />
+        <div style={{ marginTop: 10 }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={filters.includeArchived ?? false}
+              onChange={(e) => setFilters({ ...filters, includeArchived: e.target.checked })}
+              style={{ accentColor: '#10b981' }}
+            />
+            <span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Ver archivados</span>
+          </label>
+        </div>
       </div>
 
       {/* Error */}
@@ -185,6 +216,7 @@ export function TransactionsView() {
           accounts={accounts}
           onEdit={handleEdit}
           onArchive={handleArchive}
+          onUnarchive={handleUnarchive}
         />
       </div>
 

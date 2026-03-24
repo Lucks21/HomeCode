@@ -16,4 +16,5 @@ export interface TransactionFilters {
   type: 'TODOS' | 'INCOME' | 'EXPENSE';
   dateFrom: string;
   dateTo: string;
+  includeArchived?: boolean;
 }

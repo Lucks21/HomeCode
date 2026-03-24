@@ -19,6 +19,7 @@ const defaultFilters: DebtFilters = {
   status: 'TODOS',
   dateFrom: '',
   dateTo: '',
+  includeArchived: false,
 };
 
 export function DebtsView() {
@@ -27,15 +28,19 @@ export function DebtsView() {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [selectedDebt, setSelectedDebt] = useState<Debt | null>(null);
+  const [editingDebt, setEditingDebt] = useState<Debt | null>(null);
   const [detailDebtId, setDetailDebtId] = useState<number | null>(null);
 
   const {
     debts,
     isLoading,
     error,
+    fetchDebts,
     createDebt,
+    updateDebt,
     registerPayment,
     archiveDebt,
+    unarchiveDebt,
   } = useDebts();
 
   const { debt: debtDetail, refetch: refetchDetail } = useDebtDetail(detailDebtId);
@@ -52,6 +57,11 @@ export function DebtsView() {
     };
     loadAccounts();
   }, []);
+
+  // Refetch when includeArchived changes
+  useEffect(() => {
+    fetchDebts(filters.includeArchived ? { includeArchived: true } : undefined);
+  }, [filters.includeArchived, fetchDebts]);
 
   // Apply filters
   const filteredDebts = useMemo(() => {
@@ -70,9 +80,17 @@ export function DebtsView() {
     filters.dateFrom !== '' ||
     filters.dateTo !== '';
 
-  const handleClearFilters = () => setFilters(defaultFilters);
+  const handleClearFilters = () => setFilters({ ...defaultFilters, includeArchived: filters.includeArchived });
 
-  const handleCreate = () => setIsFormModalOpen(true);
+  const handleCreate = () => {
+    setEditingDebt(null);
+    setIsFormModalOpen(true);
+  };
+
+  const handleEdit = (debt: Debt) => {
+    setEditingDebt(debt);
+    setIsFormModalOpen(true);
+  };
 
   const handleViewDetail = (debt: Debt) => {
     setDetailDebtId(debt.id);
@@ -90,17 +108,34 @@ export function DebtsView() {
   const handleArchive = async (debt: Debt) => {
     try {
       await archiveDebt(debt.id);
+      if (filters.includeArchived) {
+        await fetchDebts({ includeArchived: true });
+      }
     } catch (err) {
       console.error('Error al archivar deuda:', err);
     }
   };
 
+  const handleUnarchive = async (debt: Debt) => {
+    try {
+      await unarchiveDebt(debt.id);
+      await fetchDebts({ includeArchived: filters.includeArchived });
+    } catch (err) {
+      console.error('Error al desarchivar deuda:', err);
+    }
+  };
+
   const handleFormSubmit = async (data: DebtFormData) => {
     try {
-      await createDebt(data);
+      if (editingDebt) {
+        await updateDebt(editingDebt.id, { description: data.description, date: data.date });
+      } else {
+        await createDebt(data);
+      }
       setIsFormModalOpen(false);
+      setEditingDebt(null);
     } catch (err) {
-      const errorMessage = getErrorMessage(err, 'Error al crear deuda');
+      const errorMessage = getErrorMessage(err, 'Error al guardar deuda');
       console.error(errorMessage);
     }
   };
@@ -346,8 +381,17 @@ export function DebtsView() {
           </div>
         </div>
 
-        {hasActiveFilters && (
-          <div style={{ marginTop: 12, textAlign: 'right' }}>
+        <div style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={filters.includeArchived ?? false}
+              onChange={(e) => setFilters({ ...filters, includeArchived: e.target.checked })}
+              style={{ accentColor: '#10b981' }}
+            />
+            <span style={{ color: '#94a3b8', fontSize: 13 }}>Ver archivados</span>
+          </label>
+          {hasActiveFilters && (
             <button
               onClick={handleClearFilters}
               style={{
@@ -361,8 +405,8 @@ export function DebtsView() {
             >
               Limpiar filtros
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Error */}
@@ -389,12 +433,15 @@ export function DebtsView() {
         onViewDetail={handleViewDetail}
         onRegisterPayment={handleRegisterPayment}
         onArchive={handleArchive}
+        onEdit={handleEdit}
+        onUnarchive={handleUnarchive}
       />
 
       <DebtFormModal
         isOpen={isFormModalOpen}
-        onClose={() => setIsFormModalOpen(false)}
+        onClose={() => { setIsFormModalOpen(false); setEditingDebt(null); }}
         onSubmit={handleFormSubmit}
+        debt={editingDebt}
         accounts={accounts}
         isLoading={isLoading}
       />

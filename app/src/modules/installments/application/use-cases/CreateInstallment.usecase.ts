@@ -44,6 +44,11 @@ export class CreateInstallmentUseCase {
           'El valor de cuota multiplicado por el número de cuotas debe ser mayor o igual al monto total',
         );
       }
+      if (command.installmentValue > command.totalAmount) {
+        throw new InvalidInstallmentDataException(
+          'El valor de una cuota no puede ser mayor al monto total de la deuda',
+        );
+      }
     }
 
     const installment = Installment.create(

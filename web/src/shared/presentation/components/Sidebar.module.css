@@ -31,6 +31,7 @@
   flex-direction: column;
   padding: 16px 12px;
   gap: 2px;
+  flex: 1;
 }
 
 .navItem {
@@ -55,4 +56,31 @@
   background-color: rgba(16, 185, 129, 0.12);
   color: #10b981;
   font-weight: 600;
+}
+
+.footer {
+  padding: 12px;
+  border-top: 1px solid #1a1f35;
+}
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: 10px;
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.logoutButton:hover {
+  background-color: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
 }

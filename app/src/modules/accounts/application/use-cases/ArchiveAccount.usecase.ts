@@ -26,11 +26,10 @@ export class ArchiveAccountUseCase {
       throw new AccountHasActiveChildrenException();
     }
 
-    const hasTransactions = await this.accountRepository.hasActiveTransactions(id);
     const hasDebts = await this.accountRepository.hasActiveDebts(id);
     const hasInstallments = await this.accountRepository.hasActiveInstallments(id);
 
-    if (hasTransactions || hasDebts || hasInstallments) {
+    if (hasDebts || hasInstallments) {
       throw new AccountHasActiveDataException();
     }
 

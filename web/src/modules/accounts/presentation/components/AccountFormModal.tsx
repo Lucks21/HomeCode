@@ -75,20 +75,22 @@ export function AccountFormModal({
   });
 
   useEffect(() => {
-    if (account) {
-      form.reset({
-        name: account.name,
-        type: account.type,
-        parentId: account.parentId,
-      });
-    } else {
-      form.reset({
-        name: '',
-        type: 'MAIN',
-        parentId: null,
-      });
+    if (isOpen) {
+      if (account) {
+        form.reset({
+          name: account.name,
+          type: account.type,
+          parentId: account.parentId,
+        });
+      } else {
+        form.reset({
+          name: '',
+          type: 'MAIN',
+          parentId: null,
+        });
+      }
     }
-  }, [account, form]);
+  }, [isOpen, account, form]);
 
   const handleSubmit = async (data: AccountFormData) => {
     await onSubmit(data);
@@ -126,6 +128,10 @@ export function AccountFormModal({
                       <Input
                         placeholder="Ej: Cuenta Principal, Tarjeta de Credito"
                         {...field}
+                        onChange={(e) => {
+                          e.target.value = e.target.value.toUpperCase();
+                          field.onChange(e);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />

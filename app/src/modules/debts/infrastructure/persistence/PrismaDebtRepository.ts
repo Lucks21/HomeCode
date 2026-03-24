@@ -122,8 +122,11 @@ export class PrismaDebtRepository implements DebtRepository {
 
     const where: any = {
       accountId: { in: accountIds },
-      archived: false,
     };
+
+    if (!filters.includeArchived) {
+      where.archived = false;
+    }
 
     if (filters.status) {
       where.status = filters.status;

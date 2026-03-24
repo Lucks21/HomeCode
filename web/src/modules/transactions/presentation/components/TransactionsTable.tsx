@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowDownLeft, ArrowUpRight, Pencil, Archive } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, Pencil, Archive, ArchiveRestore } from 'lucide-react';
 import type { Transaction } from '../../domain/types';
 import type { Account } from '@/modules/accounts/domain/types';
 
@@ -10,6 +10,7 @@ interface TransactionsTableProps {
   accounts: Account[];
   onEdit: (transaction: Transaction) => void;
   onArchive: (transaction: Transaction) => void;
+  onUnarchive?: (transaction: Transaction) => void;
 }
 
 const formatCLP = (amount: number) =>
@@ -91,18 +92,22 @@ function TransactionItem({
   accountName,
   onEdit,
   onArchive,
+  onUnarchive,
 }: {
   transaction: Transaction;
   accountName: string;
   onEdit: () => void;
   onArchive: () => void;
+  onUnarchive?: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
   const isExpense = transaction.type === 'EXPENSE';
+  const isArchived = transaction.archived;
 
   const iconCircleStyle: React.CSSProperties = {
     ...iconCircleBase,
     background: isExpense ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+    opacity: isArchived ? 0.5 : 1,
   };
 
   const amountStyle: React.CSSProperties = {
@@ -110,13 +115,14 @@ function TransactionItem({
     fontWeight: 700,
     fontSize: '0.95rem',
     whiteSpace: 'nowrap',
+    opacity: isArchived ? 0.5 : 1,
   };
 
   const prefix = isExpense ? '- ' : '+ ';
 
   return (
     <div
-      style={itemStyle}
+      style={{ ...itemStyle, opacity: isArchived ? 0.7 : 1 }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -131,13 +137,16 @@ function TransactionItem({
 
       {/* Center: description + account/date */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={descriptionStyle}>{transaction.description}</div>
+        <div style={{ ...descriptionStyle, textDecoration: isArchived ? 'line-through' : 'none' }}>
+          {transaction.description}
+        </div>
         <div style={subTextStyle}>
           {accountName} &middot; {formatDate(transaction.date)}
+          {isArchived && <span style={{ marginLeft: 6, color: '#f59e0b', fontSize: '0.75rem' }}>Archivado</span>}
         </div>
       </div>
 
-      {/* Right: amount */}
+      {/* Right: amount + actions */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         <span style={amountStyle}>
           {prefix}{formatCLP(transaction.amount)}
@@ -152,43 +161,65 @@ function TransactionItem({
             transition: 'opacity 0.15s',
           }}
         >
-          <button
-            style={actionButtonStyle}
-            onClick={onEdit}
-            title="Editar"
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = '#1e293b';
-              (e.currentTarget as HTMLButtonElement).style.color = '#e2e8f0';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-              (e.currentTarget as HTMLButtonElement).style.color = '#64748b';
-            }}
-          >
-            <Pencil size={16} />
-          </button>
-          <button
-            style={actionButtonStyle}
-            onClick={onArchive}
-            title="Archivar"
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = '#1e293b';
-              (e.currentTarget as HTMLButtonElement).style.color = '#e2e8f0';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-              (e.currentTarget as HTMLButtonElement).style.color = '#64748b';
-            }}
-          >
-            <Archive size={16} />
-          </button>
+          {isArchived ? (
+            onUnarchive && (
+              <button
+                style={actionButtonStyle}
+                onClick={onUnarchive}
+                title="Desarchivar"
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = '#1e293b';
+                  (e.currentTarget as HTMLButtonElement).style.color = '#10b981';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                  (e.currentTarget as HTMLButtonElement).style.color = '#64748b';
+                }}
+              >
+                <ArchiveRestore size={16} />
+              </button>
+            )
+          ) : (
+            <>
+              <button
+                style={actionButtonStyle}
+                onClick={onEdit}
+                title="Editar"
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = '#1e293b';
+                  (e.currentTarget as HTMLButtonElement).style.color = '#e2e8f0';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                  (e.currentTarget as HTMLButtonElement).style.color = '#64748b';
+                }}
+              >
+                <Pencil size={16} />
+              </button>
+              <button
+                style={actionButtonStyle}
+                onClick={onArchive}
+                title="Archivar"
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = '#1e293b';
+                  (e.currentTarget as HTMLButtonElement).style.color = '#e2e8f0';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                  (e.currentTarget as HTMLButtonElement).style.color = '#64748b';
+                }}
+              >
+                <Archive size={16} />
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-export function TransactionsTable({ transactions, accounts, onEdit, onArchive }: TransactionsTableProps) {
+export function TransactionsTable({ transactions, accounts, onEdit, onArchive, onUnarchive }: TransactionsTableProps) {
   const accountMap = new Map(accounts.map((a) => [a.id, a.name]));
 
   if (transactions.length === 0) {
@@ -216,6 +247,7 @@ export function TransactionsTable({ transactions, accounts, onEdit, onArchive }:
           accountName={accountMap.get(transaction.accountId) ?? 'Cuenta desconocida'}
           onEdit={() => onEdit(transaction)}
           onArchive={() => onArchive(transaction)}
+          onUnarchive={onUnarchive ? () => onUnarchive(transaction) : undefined}
         />
       ))}
     </div>

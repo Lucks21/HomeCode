@@ -4,6 +4,7 @@ import { AccountsPersistenceModule } from '../../accounts/infrastructure/persist
 import { CreateTransactionUseCase } from '../application/use-cases/CreateTransaction.usecase';
 import { UpdateTransactionUseCase } from '../application/use-cases/UpdateTransaction.usecase';
 import { ArchiveTransactionUseCase } from '../application/use-cases/ArchiveTransaction.usecase';
+import { UnarchiveTransactionUseCase } from '../application/use-cases/UnarchiveTransaction.usecase';
 import { ListTransactionsUseCase } from '../application/use-cases/ListTransactions.usecase';
 import { TransactionsController } from '../interfaces/http/controllers/transactions.controller';
 
@@ -14,6 +15,7 @@ import { TransactionsController } from '../interfaces/http/controllers/transacti
     CreateTransactionUseCase,
     UpdateTransactionUseCase,
     ArchiveTransactionUseCase,
+    UnarchiveTransactionUseCase,
     ListTransactionsUseCase,
   ],
   exports: [TransactionsPersistenceModule],

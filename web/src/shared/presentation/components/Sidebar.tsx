@@ -2,7 +2,8 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Wallet, ArrowLeftRight, FileText, Calendar } from 'lucide-react';
+import { Home, Wallet, ArrowLeftRight, FileText, Calendar, LogOut } from 'lucide-react';
+import { useLogout } from '@/modules/auth/presentation/hooks/useLogout';
 import styles from './Sidebar.module.css';
 
 const navItems = [
@@ -15,6 +16,7 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { logout } = useLogout();
 
   return (
     <aside className={styles.sidebar}>
@@ -38,6 +40,12 @@ export function Sidebar() {
           );
         })}
       </nav>
+      <div className={styles.footer}>
+        <button className={styles.logoutButton} onClick={logout}>
+          <LogOut size={20} />
+          <span>Cerrar sesión</span>
+        </button>
+      </div>
     </aside>
   );
 }

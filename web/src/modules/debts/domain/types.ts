@@ -26,4 +26,5 @@ export interface DebtFilters {
   status: 'TODOS' | 'PENDING' | 'PARTIAL' | 'PAID';
   dateFrom: string;
   dateTo: string;
+  includeArchived?: boolean;
 }

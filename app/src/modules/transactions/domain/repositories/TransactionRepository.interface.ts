@@ -6,6 +6,7 @@ export interface TransactionFilters {
   dateTo?: Date;
   page?: number;
   perPage?: number;
+  includeArchived?: boolean;
 }
 
 export interface TransactionRepository {

@@ -17,6 +17,7 @@ import { JwtAuthGuard } from '../../../../auth/infrastructure/security/guards/Jw
 import { CreateTransactionUseCase } from '../../../application/use-cases/CreateTransaction.usecase';
 import { UpdateTransactionUseCase } from '../../../application/use-cases/UpdateTransaction.usecase';
 import { ArchiveTransactionUseCase } from '../../../application/use-cases/ArchiveTransaction.usecase';
+import { UnarchiveTransactionUseCase } from '../../../application/use-cases/UnarchiveTransaction.usecase';
 import { ListTransactionsUseCase } from '../../../application/use-cases/ListTransactions.usecase';
 import { CreateTransactionCommand } from '../../../application/commands/CreateTransactionCommand';
 import { UpdateTransactionCommand } from '../../../application/commands/UpdateTransactionCommand';
@@ -33,6 +34,7 @@ export class TransactionsController {
     private readonly createTransactionUseCase: CreateTransactionUseCase,
     private readonly updateTransactionUseCase: UpdateTransactionUseCase,
     private readonly archiveTransactionUseCase: ArchiveTransactionUseCase,
+    private readonly unarchiveTransactionUseCase: UnarchiveTransactionUseCase,
     private readonly listTransactionsUseCase: ListTransactionsUseCase,
   ) {}
 
@@ -69,6 +71,7 @@ export class TransactionsController {
       dateTo: query.dateTo ? new Date(query.dateTo) : undefined,
       page: query.page ? parseInt(query.page) : undefined,
       perPage: query.perPage ? parseInt(query.perPage) : undefined,
+      includeArchived: query.includeArchived === 'true',
     };
 
     const result = await this.listTransactionsUseCase.execute(req.user.id, filters);
@@ -118,6 +121,20 @@ export class TransactionsController {
 
     return {
       message: 'Movimiento archivado exitosamente',
+      data: transaction.toPrimitives(),
+    };
+  }
+
+  @Patch(':id/unarchive')
+  @ApiOperation({ summary: 'Desarchivar movimiento', description: 'Desarchiva un movimiento.' })
+  @ApiParam({ name: 'id', type: Number, description: 'ID del movimiento' })
+  @ApiResponse({ status: 200, description: 'Movimiento desarchivado' })
+  @ApiResponse({ status: 404, description: 'Movimiento no encontrado' })
+  async unarchiveTransaction(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
+    const transaction = await this.unarchiveTransactionUseCase.execute(id, req.user.id);
+
+    return {
+      message: 'Movimiento desarchivado exitosamente',
       data: transaction.toPrimitives(),
     };
   }

@@ -21,6 +21,9 @@ export class DebtsHttpRepository {
     if (filters?.dateTo) {
       params.append('dateTo', filters.dateTo);
     }
+    if (filters?.includeArchived) {
+      params.append('includeArchived', 'true');
+    }
 
     const query = params.toString();
     const url = query ? `${this.basePath}?${query}` : this.basePath;
@@ -45,6 +48,15 @@ export class DebtsHttpRepository {
 
   async archive(id: number): Promise<void> {
     await httpClient.patch<ApiResponse<void>>(`${this.basePath}/${id}/archive`, {});
+  }
+
+  async unarchive(id: number): Promise<void> {
+    await httpClient.patch<ApiResponse<void>>(`${this.basePath}/${id}/unarchive`, {});
+  }
+
+  async update(id: number, data: { description?: string; date?: string }): Promise<Debt> {
+    const response = await httpClient.patch<ApiResponse<Debt>>(`${this.basePath}/${id}`, data);
+    return response.data;
   }
 }
 

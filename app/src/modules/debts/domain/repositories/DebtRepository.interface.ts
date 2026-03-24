@@ -7,6 +7,7 @@ export interface DebtFilters {
   dateTo?: string;
   page?: number;
   perPage?: number;
+  includeArchived?: boolean;
 }
 
 export interface DebtPaginatedResult {
