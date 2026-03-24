@@ -27,6 +27,7 @@ export class PrismaAccountRepository implements AccountRepository {
       created.archived,
       created.archivedAt,
       created.createdAt,
+      created.showInDashboard,
     );
   }
 
@@ -43,6 +44,7 @@ export class PrismaAccountRepository implements AccountRepository {
       account.archived,
       account.archivedAt,
       account.createdAt,
+      account.showInDashboard,
     );
   }
 
@@ -67,6 +69,7 @@ export class PrismaAccountRepository implements AccountRepository {
         a.archived,
         a.archivedAt,
         a.createdAt,
+        a.showInDashboard,
       ),
     );
   }
@@ -87,6 +90,7 @@ export class PrismaAccountRepository implements AccountRepository {
         a.archived,
         a.archivedAt,
         a.createdAt,
+        a.showInDashboard,
       ),
     );
   }
@@ -99,6 +103,7 @@ export class PrismaAccountRepository implements AccountRepository {
         parentId: account.parentId,
         archived: account.archived,
         archivedAt: account.archivedAt,
+        showInDashboard: account.showInDashboard,
       },
     });
 
@@ -111,6 +116,7 @@ export class PrismaAccountRepository implements AccountRepository {
       updated.archived,
       updated.archivedAt,
       updated.createdAt,
+      updated.showInDashboard,
     );
   }
 

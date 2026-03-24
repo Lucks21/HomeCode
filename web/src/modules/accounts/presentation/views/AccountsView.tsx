@@ -56,6 +56,7 @@ export function AccountsView() {
     updateAccount,
     archiveAccount,
     unarchiveAccount,
+    toggleDashboard,
   } = useAccounts();
 
   const { toasts, removeToast, success, error: showError } = useToast();
@@ -123,6 +124,15 @@ export function AccountsView() {
       success('Cuenta desarchivada exitosamente');
     } catch (err) {
       const errorMessage = getErrorMessage(err, 'Error al desarchivar cuenta');
+      showError(errorMessage);
+    }
+  };
+
+  const handleToggleDashboard = async (account: Account, show: boolean) => {
+    try {
+      await toggleDashboard(account.id, show);
+    } catch (err) {
+      const errorMessage = getErrorMessage(err, 'Error al actualizar cuenta');
       showError(errorMessage);
     }
   };
@@ -349,6 +359,7 @@ export function AccountsView() {
           onArchive={handleArchiveAccount}
           onUnarchive={handleUnarchiveAccount}
           onSelect={handleSelectAccount}
+          onToggleDashboard={handleToggleDashboard}
         />
       )}
 

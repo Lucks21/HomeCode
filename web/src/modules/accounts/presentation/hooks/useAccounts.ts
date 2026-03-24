@@ -108,6 +108,23 @@ export function useAccounts() {
     [fetchAccounts],
   );
 
+  const toggleDashboard = useCallback(
+    async (id: number, show: boolean) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        await accountsRepository.toggleDashboard(id, show);
+        await fetchAccounts();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error al actualizar cuenta');
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [fetchAccounts],
+  );
+
   useEffect(() => {
     fetchAccounts();
   }, [fetchAccounts]);
@@ -121,5 +138,6 @@ export function useAccounts() {
     updateAccount,
     archiveAccount,
     unarchiveAccount,
+    toggleDashboard,
   };
 }

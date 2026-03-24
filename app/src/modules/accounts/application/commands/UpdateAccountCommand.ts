@@ -5,5 +5,6 @@ export class UpdateAccountCommand {
     public readonly name?: string,
     public readonly type?: AccountType,
     public readonly parentId?: number | null,
+    public readonly showInDashboard?: boolean,
   ) {}
 }

@@ -134,8 +134,9 @@ model Account {
   userId    Int
   createdAt DateTime     @default(now())
 
-  archived   Boolean   @default(false)
-  archivedAt DateTime?
+  archived        Boolean   @default(false)
+  archivedAt      DateTime?
+  showInDashboard Boolean   @default(false)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

@@ -153,7 +153,7 @@ export class AccountsController {
     @Body() body: UpdateAccountRequestDto,
     @Request() req: any,
   ) {
-    const command = new UpdateAccountCommand(body.name, body.type as AccountType | undefined, body.parentId);
+    const command = new UpdateAccountCommand(body.name, body.type as AccountType | undefined, body.parentId, body.showInDashboard);
     const account = await this.updateAccountUseCase.execute(id, command, req.user.id);
 
     return {

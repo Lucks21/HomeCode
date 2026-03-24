@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsInt, IsIn, ValidateIf } from 'class-validator';
+import { IsString, IsOptional, IsInt, IsIn, ValidateIf, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateAccountRequestDto {
@@ -17,4 +17,9 @@ export class UpdateAccountRequestDto {
   @ValidateIf((obj: UpdateAccountRequestDto) => obj.parentId !== null)
   @IsInt({ message: 'El ID de la cuenta padre debe ser un número entero' })
   parentId?: number | null;
+
+  @ApiProperty({ description: 'Mostrar balance en el dashboard', required: false, example: true })
+  @IsOptional()
+  @IsBoolean()
+  showInDashboard?: boolean;
 }

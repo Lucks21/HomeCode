@@ -9,6 +9,7 @@ export interface Account {
   archived: boolean;
   archivedAt: string | null;
   createdAt: string;
+  showInDashboard: boolean;
   children?: Account[];
 }
 

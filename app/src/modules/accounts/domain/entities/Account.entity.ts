@@ -14,6 +14,7 @@ export class Account {
     public archived: boolean,
     public archivedAt: Date | null,
     public createdAt: Date,
+    public showInDashboard: boolean,
   ) {}
 
   static create(
@@ -25,8 +26,9 @@ export class Account {
     archived: boolean = false,
     archivedAt: Date | null = null,
     createdAt: Date = new Date(),
+    showInDashboard: boolean = false,
   ): Account {
-    return new Account(id, name, type, parentId, userId, archived, archivedAt, createdAt);
+    return new Account(id, name, type, parentId, userId, archived, archivedAt, createdAt, showInDashboard);
   }
 
   archive(): void {
@@ -37,6 +39,14 @@ export class Account {
   unarchive(): void {
     this.archived = false;
     this.archivedAt = null;
+  }
+
+  pinToDashboard(): void {
+    this.showInDashboard = true;
+  }
+
+  unpinFromDashboard(): void {
+    this.showInDashboard = false;
   }
 
   updateInfo(name: string, type: AccountType, parentId: number | null): void {
@@ -55,6 +65,7 @@ export class Account {
       archived: this.archived,
       archivedAt: this.archivedAt,
       createdAt: this.createdAt,
+      showInDashboard: this.showInDashboard,
     };
   }
 }

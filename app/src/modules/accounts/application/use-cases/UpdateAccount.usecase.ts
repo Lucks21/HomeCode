@@ -56,6 +56,8 @@ export class UpdateAccountUseCase {
     }
 
     account.updateInfo(newName, newType, newParentId ?? null);
+    if (command.showInDashboard === true) account.pinToDashboard();
+    else if (command.showInDashboard === false) account.unpinFromDashboard();
     return this.accountRepository.update(account);
   }
 }

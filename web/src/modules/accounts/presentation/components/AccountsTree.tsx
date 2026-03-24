@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { Wallet, FileText, Calendar, ChevronRight, Pencil, Archive, ArchiveRestore } from 'lucide-react';
+import { Wallet, FileText, Calendar, ChevronRight, Pencil, Archive, ArchiveRestore, LayoutDashboard } from 'lucide-react';
 import type { Account } from '../../domain/types';
 
 const typeConfig: Record<
@@ -43,6 +43,7 @@ interface AccountsTreeProps {
   onArchive: (account: Account) => void;
   onUnarchive: (account: Account) => void;
   onSelect: (account: Account) => void;
+  onToggleDashboard: (account: Account, show: boolean) => void;
 }
 
 function AccountCard({
@@ -52,6 +53,7 @@ function AccountCard({
   onArchive,
   onUnarchive,
   onSelect,
+  onToggleDashboard,
 }: {
   account: Account;
   level: number;
@@ -59,6 +61,7 @@ function AccountCard({
   onArchive: (account: Account) => void;
   onUnarchive: (account: Account) => void;
   onSelect: (account: Account) => void;
+  onToggleDashboard: (account: Account, show: boolean) => void;
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const config = typeConfig[account.type] || typeConfig.MAIN;
@@ -147,6 +150,51 @@ function AccountCard({
         >
           {config.label}
         </span>
+
+        {/* Dashboard toggle — always visible, green when pinned */}
+        {!account.archived && (
+          <button
+            type="button"
+            title={account.showInDashboard ? 'Quitar del dashboard' : 'Mostrar en dashboard'}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleDashboard(account, !account.showInDashboard);
+            }}
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 8,
+              border: 'none',
+              background: account.showInDashboard
+                ? 'rgba(16, 185, 129, 0.15)'
+                : 'rgba(148, 163, 184, 0.1)',
+              color: account.showInDashboard ? '#10b981' : '#64748b',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'background 0.15s, color 0.15s',
+              flexShrink: 0,
+            }}
+            onMouseEnter={(e) => {
+              if (!account.showInDashboard) {
+                e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)';
+                e.currentTarget.style.color = '#10b981';
+              } else {
+                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
+                e.currentTarget.style.color = '#ef4444';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = account.showInDashboard
+                ? 'rgba(16, 185, 129, 0.15)'
+                : 'rgba(148, 163, 184, 0.1)';
+              e.currentTarget.style.color = account.showInDashboard ? '#10b981' : '#64748b';
+            }}
+          >
+            <LayoutDashboard size={15} />
+          </button>
+        )}
 
         {/* Action buttons (visible on hover) */}
         <div
@@ -276,13 +324,14 @@ function AccountCard({
             onArchive={onArchive}
             onUnarchive={onUnarchive}
             onSelect={onSelect}
+            onToggleDashboard={onToggleDashboard}
           />
         ))}
     </>
   );
 }
 
-export function AccountsTree({ accounts, onEdit, onArchive, onUnarchive, onSelect }: AccountsTreeProps) {
+export function AccountsTree({ accounts, onEdit, onArchive, onUnarchive, onSelect, onToggleDashboard }: AccountsTreeProps) {
   if (accounts.length === 0) {
     return (
       <div
@@ -313,6 +362,7 @@ export function AccountsTree({ accounts, onEdit, onArchive, onUnarchive, onSelec
           onArchive={onArchive}
           onUnarchive={onUnarchive}
           onSelect={onSelect}
+          onToggleDashboard={onToggleDashboard}
         />
       ))}
     </div>
