@@ -1,66 +1,46 @@
 'use client';
 
-import { ProtectedRoute } from '@/modules/auth/presentation/components/ProtectedRoute';
-import { useAuth } from '@/modules/auth/presentation/hooks/useAuth';
-import { useLogout } from '@/modules/auth/presentation/hooks/useLogout';
+import { useState, useEffect } from 'react';
+import { accountsRepository } from '@/modules/accounts/infrastructure/repositories/AccountsHttpRepository';
+import { CurrencyDisplay } from '@/shared/presentation/components/CurrencyDisplay';
 
 export default function DashboardPage() {
-  const { user, isLoading } = useAuth();
-  const { logout, isLoggingOut } = useLogout();
+  const [summary, setSummary] = useState<{ income: number; expenses: number; balance: number } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const now = new Date();
+    accountsRepository
+      .getMonthlySummary(now.getFullYear(), now.getMonth() + 1)
+      .then(setSummary)
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
+  }, []);
 
   return (
-    <ProtectedRoute>
-      <main className="page-shell">
-        <section
-          style={{
-            width: '100%',
-            maxWidth: 720,
-            borderRadius: 16,
-            background: '#ffffff',
-            border: '1px solid #e5e7eb',
-            padding: 24,
-            boxShadow: '0 10px 25px rgba(0,0,0,0.06)',
-          }}
-        >
-          <h1 style={{ marginTop: 0 }}>Dashboard</h1>
-          <p style={{ marginTop: 0, color: '#4b5563' }}>Sesion iniciada correctamente.</p>
+    <div>
+      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '24px' }}>Dashboard</h1>
 
-          {isLoading ? (
-            <p>Cargando perfil...</p>
-          ) : (
-            <div style={{ lineHeight: 1.8 }}>
-              <div>
-                <strong>ID:</strong> {user?.id ?? '-'}
-              </div>
-              <div>
-                <strong>Nombre:</strong> {user?.name ?? '-'}
-              </div>
-              <div>
-                <strong>Email:</strong> {user?.email ?? '-'}
-              </div>
-            </div>
-          )}
-
-          <div style={{ marginTop: 20 }}>
-            <button
-              type="button"
-              onClick={() => void logout()}
-              disabled={isLoggingOut}
-              style={{
-                background: '#0f172a',
-                color: '#fff',
-                border: 0,
-                borderRadius: 10,
-                padding: '10px 14px',
-                cursor: isLoggingOut ? 'not-allowed' : 'pointer',
-                opacity: isLoggingOut ? 0.7 : 1,
-              }}
-            >
-              {isLoggingOut ? 'Cerrando sesion...' : 'Cerrar sesion'}
-            </button>
-          </div>
-        </section>
-      </main>
-    </ProtectedRoute>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
+        <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+          <p style={{ color: '#666', fontSize: '0.875rem', marginBottom: '8px' }}>Ingresos del Mes</p>
+          <p style={{ fontSize: '1.5rem', fontWeight: 700, color: '#16a34a' }}>
+            {isLoading ? '...' : <CurrencyDisplay amount={summary?.income ?? 0} />}
+          </p>
+        </div>
+        <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+          <p style={{ color: '#666', fontSize: '0.875rem', marginBottom: '8px' }}>Gastos del Mes</p>
+          <p style={{ fontSize: '1.5rem', fontWeight: 700, color: '#dc2626' }}>
+            {isLoading ? '...' : <CurrencyDisplay amount={summary?.expenses ?? 0} />}
+          </p>
+        </div>
+        <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+          <p style={{ color: '#666', fontSize: '0.875rem', marginBottom: '8px' }}>Balance del Mes</p>
+          <p style={{ fontSize: '1.5rem', fontWeight: 700, color: (summary?.balance ?? 0) >= 0 ? '#16a34a' : '#dc2626' }}>
+            {isLoading ? '...' : <CurrencyDisplay amount={summary?.balance ?? 0} />}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
