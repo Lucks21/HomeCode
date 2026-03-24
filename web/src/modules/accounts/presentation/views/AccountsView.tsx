@@ -55,6 +55,7 @@ export function AccountsView() {
     createAccount,
     updateAccount,
     archiveAccount,
+    unarchiveAccount,
   } = useAccounts();
 
   const { toasts, removeToast, success, error: showError } = useToast();
@@ -112,6 +113,16 @@ export function AccountsView() {
       success('Cuenta archivada exitosamente');
     } catch (err) {
       const errorMessage = getErrorMessage(err, 'Error al archivar cuenta');
+      showError(errorMessage);
+    }
+  };
+
+  const handleUnarchiveAccount = async (account: Account) => {
+    try {
+      await unarchiveAccount(account.id);
+      success('Cuenta desarchivada exitosamente');
+    } catch (err) {
+      const errorMessage = getErrorMessage(err, 'Error al desarchivar cuenta');
       showError(errorMessage);
     }
   };
@@ -336,6 +347,7 @@ export function AccountsView() {
           accounts={treeAccounts}
           onEdit={handleEditAccount}
           onArchive={handleArchiveAccount}
+          onUnarchive={handleUnarchiveAccount}
           onSelect={handleSelectAccount}
         />
       )}

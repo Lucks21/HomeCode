@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 interface SelectProps {
   value?: string;
@@ -11,17 +11,32 @@ interface SelectContextValue {
   onValueChange?: (value: string) => void;
   open: boolean;
   setOpen: (open: boolean) => void;
+  registerOption: (value: string, label: string) => void;
+  labelMap: Map<string, string>;
 }
 
 const SelectContext = React.createContext<SelectContextValue>({
   open: false,
   setOpen: () => undefined,
+  registerOption: () => undefined,
+  labelMap: new Map(),
 });
 
 export function Select({ value, onValueChange, children }: SelectProps) {
   const [open, setOpen] = useState(false);
+  const [labelMap, setLabelMap] = useState<Map<string, string>>(new Map());
+
+  const registerOption = useCallback((optValue: string, label: string) => {
+    setLabelMap((prev) => {
+      if (prev.get(optValue) === label) return prev;
+      const next = new Map(prev);
+      next.set(optValue, label);
+      return next;
+    });
+  }, []);
+
   return (
-    <SelectContext.Provider value={{ value, onValueChange, open, setOpen }}>
+    <SelectContext.Provider value={{ value, onValueChange, open, setOpen, registerOption, labelMap }}>
       <div style={{ position: 'relative' }}>{children}</div>
     </SelectContext.Provider>
   );
@@ -66,10 +81,11 @@ export function SelectTrigger({
 }
 
 export function SelectValue({ placeholder }: { placeholder?: string }) {
-  const { value } = React.useContext(SelectContext);
+  const { value, labelMap } = React.useContext(SelectContext);
+  const displayText = value != null && value !== '' ? (labelMap.get(value) ?? value) : undefined;
   return (
-    <span style={{ color: value ? '#e2e8f0' : '#64748b' }}>
-      {value ?? placeholder}
+    <span style={{ color: displayText ? '#e2e8f0' : '#64748b' }}>
+      {displayText ?? placeholder}
     </span>
   );
 }
@@ -96,11 +112,11 @@ export function SelectContent({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [open, setOpen]);
 
-  if (!open) return null;
   return (
     <div
       ref={ref}
       style={{
+        display: open ? 'block' : 'none',
         position: 'absolute',
         zIndex: 50,
         minWidth: '100%',
@@ -120,8 +136,15 @@ export function SelectContent({
 }
 
 export function SelectItem({ value, children }: { value: string; children: React.ReactNode }) {
-  const { onValueChange, setOpen } = React.useContext(SelectContext);
+  const { onValueChange, setOpen, registerOption } = React.useContext(SelectContext);
   const [hovered, setHovered] = useState(false);
+
+  useEffect(() => {
+    if (typeof children === 'string') {
+      registerOption(value, children);
+    }
+  }, [value, children, registerOption]);
+
   return (
     <div
       style={{

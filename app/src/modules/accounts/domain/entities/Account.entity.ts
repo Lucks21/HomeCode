@@ -34,8 +34,14 @@ export class Account {
     this.archivedAt = new Date();
   }
 
-  updateInfo(name: string, parentId: number | null): void {
+  unarchive(): void {
+    this.archived = false;
+    this.archivedAt = null;
+  }
+
+  updateInfo(name: string, type: AccountType, parentId: number | null): void {
     this.name = name;
+    this.type = type;
     this.parentId = parentId;
   }
 

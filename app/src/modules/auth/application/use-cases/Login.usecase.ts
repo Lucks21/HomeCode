@@ -73,11 +73,11 @@ export class LoginUseCase {
 
     // Calcular fecha de expiración del refresh token
     const accessTokenExpiration = await this.settingsService.get<string>(
-      'auth.access_token_ttl',
+      'JWT_ACCESS_TOKEN_EXPIRATION',
       '15m',
     );
     const refreshTokenExpiration = await this.settingsService.get<string>(
-      'auth.refresh_token_ttl',
+      'JWT_REFRESH_TOKEN_EXPIRATION',
       '7d',
     );
 
@@ -100,7 +100,7 @@ export class LoginUseCase {
 
   // Método auxiliar para calcular la fecha de expiración
   private calculateExpirationDate(expiration: string): Date {
-    const match = expiration.match(/^(\d+)([smhd])$/);
+    const match = expiration.match(/^(\d+)([smhdy])$/);
     if (!match) {
       throw new Error(`Invalid expiration format: ${expiration}`);
     }
@@ -118,6 +118,8 @@ export class LoginUseCase {
         return new Date(now.getTime() + value * 60 * 60 * 1000);
       case 'd':
         return new Date(now.getTime() + value * 24 * 60 * 60 * 1000);
+      case 'y':
+        return new Date(now.getTime() + value * 365 * 24 * 60 * 60 * 1000);
       default:
         throw new Error(`Invalid expiration unit: ${unit}`);
     }

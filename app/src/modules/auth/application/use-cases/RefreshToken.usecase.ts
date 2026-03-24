@@ -74,7 +74,7 @@ export class RefreshTokenUseCase {
 
     // Retornar el nuevo access token
     const accessTokenExpiration = await this.settingsService.get<string>(
-      'auth.access_token_ttl',
+      'JWT_ACCESS_TOKEN_EXPIRATION',
       '15m',
     );
     return new RefreshTokenResult(accessToken, accessTokenExpiration);

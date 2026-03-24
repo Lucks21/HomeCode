@@ -36,7 +36,15 @@ export class CreateInstallmentUseCase {
       throw new InvalidInstallmentDataException('El número de cuotas debe ser mayor a 0');
     }
 
-    const installmentValue = command.installmentValue ?? Math.round(command.totalAmount / command.totalInstallments);
+    const installmentValue = command.installmentValue ?? Math.ceil(command.totalAmount / command.totalInstallments);
+
+    if (command.installmentValue !== undefined && command.installmentValue !== null) {
+      if (command.installmentValue * command.totalInstallments < command.totalAmount) {
+        throw new InvalidInstallmentDataException(
+          'El valor de cuota multiplicado por el número de cuotas debe ser mayor o igual al monto total',
+        );
+      }
+    }
 
     const installment = Installment.create(
       0,

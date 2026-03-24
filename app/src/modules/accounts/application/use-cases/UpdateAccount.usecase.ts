@@ -8,7 +8,7 @@ import {
   InvalidAccountDataException,
 } from '../../domain/exceptions';
 import { ACCOUNT_REPOSITORY } from '../../Accounts.Tokens';
-import { Account } from '../../domain/entities/Account.entity';
+import { Account, AccountType } from '../../domain/entities/Account.entity';
 
 @Injectable()
 export class UpdateAccountUseCase {
@@ -26,6 +26,15 @@ export class UpdateAccountUseCase {
     const newName = command.name !== undefined ? command.name.trim() : account.name;
     if (!newName || newName.length === 0) {
       throw new InvalidAccountDataException('El nombre de la cuenta es requerido');
+    }
+
+    const newType = command.type !== undefined ? command.type : account.type;
+
+    if (newType !== account.type) {
+      const hasData = await this.accountRepository.hasAssociatedData(id);
+      if (hasData) {
+        throw new AccountTypeChangeException();
+      }
     }
 
     const newParentId = command.parentId !== undefined ? command.parentId : account.parentId;
@@ -46,7 +55,7 @@ export class UpdateAccountUseCase {
       }
     }
 
-    account.updateInfo(newName, newParentId ?? null);
+    account.updateInfo(newName, newType, newParentId ?? null);
     return this.accountRepository.update(account);
   }
 }

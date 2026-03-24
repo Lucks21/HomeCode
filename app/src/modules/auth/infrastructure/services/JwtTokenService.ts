@@ -12,12 +12,12 @@ export class JwtTokenService implements TokenService {
   ) {}
 
   async generateAccessToken(payload: any): Promise<string> {
-    const ttl = this.settingsService?.getCached<string>('auth.access_token_ttl', '15m') ?? '15m';
+    const ttl = this.settingsService?.getCached<string>('JWT_ACCESS_TOKEN_EXPIRATION', '15m') ?? '15m';
     return this.jwtService.signAsync(payload, { expiresIn: ttl as any });
   }
 
   async generateRefreshToken(payload: any): Promise<string> {
-    const ttl = this.settingsService?.getCached<string>('auth.refresh_token_ttl', '7d') ?? '7d';
+    const ttl = this.settingsService?.getCached<string>('JWT_REFRESH_TOKEN_EXPIRATION', '7d') ?? '7d';
     return this.jwtService.signAsync(payload, { expiresIn: ttl as any });
   }
 

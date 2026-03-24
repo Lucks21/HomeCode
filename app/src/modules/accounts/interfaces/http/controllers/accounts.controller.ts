@@ -17,12 +17,14 @@ import { JwtAuthGuard } from '../../../../auth/infrastructure/security/guards/Jw
 import { CreateAccountUseCase } from '../../../application/use-cases/CreateAccount.usecase';
 import { UpdateAccountUseCase } from '../../../application/use-cases/UpdateAccount.usecase';
 import { ArchiveAccountUseCase } from '../../../application/use-cases/ArchiveAccount.usecase';
+import { UnarchiveAccountUseCase } from '../../../application/use-cases/UnarchiveAccount.usecase';
 import { ListAccountsUseCase } from '../../../application/use-cases/ListAccounts.usecase';
 import { GetAccountDetailUseCase } from '../../../application/use-cases/GetAccountDetail.usecase';
 import { GetAccountSummaryUseCase } from '../../../application/use-cases/GetAccountSummary.usecase';
 import { GetMonthlySummaryUseCase } from '../../../application/use-cases/GetMonthlySummary.usecase';
 import { CreateAccountCommand } from '../../../application/commands/CreateAccountCommand';
 import { UpdateAccountCommand } from '../../../application/commands/UpdateAccountCommand';
+import { AccountType } from '../../../domain/entities/Account.entity';
 import { CreateAccountRequestDto } from '../dto/request/CreateAccountRequest.dto';
 import { UpdateAccountRequestDto } from '../dto/request/UpdateAccountRequest.dto';
 import { ListAccountsQueryDto } from '../dto/request/ListAccountsQuery.dto';
@@ -36,6 +38,7 @@ export class AccountsController {
     private readonly createAccountUseCase: CreateAccountUseCase,
     private readonly updateAccountUseCase: UpdateAccountUseCase,
     private readonly archiveAccountUseCase: ArchiveAccountUseCase,
+    private readonly unarchiveAccountUseCase: UnarchiveAccountUseCase,
     private readonly listAccountsUseCase: ListAccountsUseCase,
     private readonly getAccountDetailUseCase: GetAccountDetailUseCase,
     private readonly getAccountSummaryUseCase: GetAccountSummaryUseCase,
@@ -150,7 +153,7 @@ export class AccountsController {
     @Body() body: UpdateAccountRequestDto,
     @Request() req: any,
   ) {
-    const command = new UpdateAccountCommand(body.name, body.parentId);
+    const command = new UpdateAccountCommand(body.name, body.type as AccountType | undefined, body.parentId);
     const account = await this.updateAccountUseCase.execute(id, command, req.user.id);
 
     return {
@@ -169,6 +172,20 @@ export class AccountsController {
 
     return {
       message: 'Cuenta archivada exitosamente',
+      data: account.toPrimitives(),
+    };
+  }
+
+  @Patch(':id/unarchive')
+  @ApiOperation({ summary: 'Desarchivar cuenta', description: 'Reactiva una cuenta archivada.' })
+  @ApiParam({ name: 'id', type: Number, description: 'ID de la cuenta' })
+  @ApiResponse({ status: 200, description: 'Cuenta desarchivada' })
+  @ApiResponse({ status: 404, description: 'Cuenta no encontrada' })
+  async unarchiveAccount(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
+    const account = await this.unarchiveAccountUseCase.execute(id, req.user.id);
+
+    return {
+      message: 'Cuenta desarchivada exitosamente',
       data: account.toPrimitives(),
     };
   }

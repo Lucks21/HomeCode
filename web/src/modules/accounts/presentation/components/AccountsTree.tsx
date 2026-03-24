@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { Wallet, FileText, Calendar, ChevronRight, Pencil, Archive } from 'lucide-react';
+import { Wallet, FileText, Calendar, ChevronRight, Pencil, Archive, ArchiveRestore } from 'lucide-react';
 import type { Account } from '../../domain/types';
 
 const typeConfig: Record<
@@ -41,6 +41,7 @@ interface AccountsTreeProps {
   accounts: Account[];
   onEdit: (account: Account) => void;
   onArchive: (account: Account) => void;
+  onUnarchive: (account: Account) => void;
   onSelect: (account: Account) => void;
 }
 
@@ -49,12 +50,14 @@ function AccountCard({
   level,
   onEdit,
   onArchive,
+  onUnarchive,
   onSelect,
 }: {
   account: Account;
   level: number;
   onEdit: (account: Account) => void;
   onArchive: (account: Account) => void;
+  onUnarchive: (account: Account) => void;
   onSelect: (account: Account) => void;
 }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -220,6 +223,39 @@ function AccountCard({
               <Archive size={15} />
             </button>
           )}
+          {account.archived && (
+            <button
+              type="button"
+              title="Desarchivar"
+              onClick={(e) => {
+                e.stopPropagation();
+                onUnarchive(account);
+              }}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                border: 'none',
+                background: 'rgba(148, 163, 184, 0.1)',
+                color: '#94a3b8',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'background 0.15s, color 0.15s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(16, 185, 129, 0.15)';
+                e.currentTarget.style.color = '#10b981';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(148, 163, 184, 0.1)';
+                e.currentTarget.style.color = '#94a3b8';
+              }}
+            >
+              <ArchiveRestore size={15} />
+            </button>
+          )}
         </div>
 
         {/* Chevron right */}
@@ -238,6 +274,7 @@ function AccountCard({
             level={level + 1}
             onEdit={onEdit}
             onArchive={onArchive}
+            onUnarchive={onUnarchive}
             onSelect={onSelect}
           />
         ))}
@@ -245,7 +282,7 @@ function AccountCard({
   );
 }
 
-export function AccountsTree({ accounts, onEdit, onArchive, onSelect }: AccountsTreeProps) {
+export function AccountsTree({ accounts, onEdit, onArchive, onUnarchive, onSelect }: AccountsTreeProps) {
   if (accounts.length === 0) {
     return (
       <div
@@ -274,6 +311,7 @@ export function AccountsTree({ accounts, onEdit, onArchive, onSelect }: Accounts
           level={0}
           onEdit={onEdit}
           onArchive={onArchive}
+          onUnarchive={onUnarchive}
           onSelect={onSelect}
         />
       ))}

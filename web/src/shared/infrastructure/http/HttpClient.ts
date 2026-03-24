@@ -16,6 +16,8 @@ interface RequestConfig {
 
 export class HttpClient {
   private baseUrl: string;
+  private isRefreshing = false;
+  private refreshPromise: Promise<boolean> | null = null;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
@@ -29,10 +31,50 @@ export class HttpClient {
     }
   }
 
+  private async tryRefreshToken(): Promise<boolean> {
+    if (typeof window === 'undefined') return false;
+
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) return false;
+
+    try {
+      const response = await fetch(`${this.baseUrl}/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (!response.ok) return false;
+
+      const data = (await response.json()) as { data?: { accessToken?: string } };
+      const newAccessToken = data?.data?.accessToken;
+      if (newAccessToken) {
+        localStorage.setItem('access_token', newAccessToken);
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
+    }
+  }
+
+  private async handleRefresh(): Promise<boolean> {
+    if (this.isRefreshing && this.refreshPromise) {
+      return this.refreshPromise;
+    }
+    this.isRefreshing = true;
+    this.refreshPromise = this.tryRefreshToken().finally(() => {
+      this.isRefreshing = false;
+      this.refreshPromise = null;
+    });
+    return this.refreshPromise;
+  }
+
   private async request<T>(
     path: string,
     options: RequestInit = {},
     config?: RequestConfig,
+    isRetry = false,
   ): Promise<T> {
     const token = config?.token ?? this.getToken();
     const headers: Record<string, string> = {
@@ -50,7 +92,18 @@ export class HttpClient {
     });
 
     if (!response.ok) {
-      if (response.status === 401 && typeof window !== 'undefined') {
+      if (response.status === 401 && typeof window !== 'undefined' && !isRetry) {
+        const refreshed = await this.handleRefresh();
+        if (refreshed) {
+          return this.request<T>(path, options, config, true);
+        }
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        window.location.href = '/login';
+        throw new Error('Sesión expirada');
+      }
+
+      if (response.status === 401 && typeof window !== 'undefined' && isRetry) {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         window.location.href = '/login';

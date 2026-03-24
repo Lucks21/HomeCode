@@ -4,6 +4,7 @@ import { AccountsPersistenceModule } from './persistence/Accounts.Persistence.Mo
 import { CreateAccountUseCase } from '../application/use-cases/CreateAccount.usecase';
 import { UpdateAccountUseCase } from '../application/use-cases/UpdateAccount.usecase';
 import { ArchiveAccountUseCase } from '../application/use-cases/ArchiveAccount.usecase';
+import { UnarchiveAccountUseCase } from '../application/use-cases/UnarchiveAccount.usecase';
 import { ListAccountsUseCase } from '../application/use-cases/ListAccounts.usecase';
 import { GetAccountDetailUseCase } from '../application/use-cases/GetAccountDetail.usecase';
 import { GetAccountSummaryUseCase } from '../application/use-cases/GetAccountSummary.usecase';
@@ -17,6 +18,7 @@ import { AccountsController } from '../interfaces/http/controllers/accounts.cont
     CreateAccountUseCase,
     UpdateAccountUseCase,
     ArchiveAccountUseCase,
+    UnarchiveAccountUseCase,
     ListAccountsUseCase,
     GetAccountDetailUseCase,
     GetAccountSummaryUseCase,

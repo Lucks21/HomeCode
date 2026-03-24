@@ -31,6 +31,10 @@ export class AccountsHttpRepository {
     await httpClient.patch<ApiResponse<void>>(`${this.basePath}/${id}/archive`, {});
   }
 
+  async unarchive(id: number): Promise<void> {
+    await httpClient.patch<ApiResponse<void>>(`${this.basePath}/${id}/unarchive`, {});
+  }
+
   async getSummary(id: number): Promise<{ income: number; expenses: number; balance: number }> {
     const response = await httpClient.get<ApiResponse<{ income: number; expenses: number; balance: number }>>(
       `${this.basePath}/${id}/summary`,

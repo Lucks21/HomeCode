@@ -49,6 +49,10 @@ export class RegisterDebtPaymentUseCase {
       new Date(command.date),
     );
 
+    if (debt.remainingAmount === 0) {
+      debt.archive();
+    }
+
     await this.debtRepository.update(debt);
 
     return payment;

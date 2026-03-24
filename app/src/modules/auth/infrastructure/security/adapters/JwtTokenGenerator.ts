@@ -21,7 +21,7 @@ export class JwtTokenGenerator implements TokenGenerator {
 
   sign(payload: TokenPayload): string {
     const accessTokenTtl = this.settingsService
-      ? this.settingsService.getCached<string>('auth.access_token_ttl', '15m')
+      ? this.settingsService.getCached<string>('JWT_ACCESS_TOKEN_EXPIRATION', '15m')
       : this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRATION', '15m');
 
     return this.jwtService.sign(
@@ -38,7 +38,7 @@ export class JwtTokenGenerator implements TokenGenerator {
 
   signRefresh(payload: RefreshTokenPayload): string {
     const refreshTokenTtl = this.settingsService
-      ? this.settingsService.getCached<string>('auth.refresh_token_ttl', '7d')
+      ? this.settingsService.getCached<string>('JWT_REFRESH_TOKEN_EXPIRATION', '7d')
       : this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRATION', '7d');
 
     return this.jwtService.sign(

@@ -67,6 +67,7 @@ export function TransactionFormModal({
   });
 
   useEffect(() => {
+    if (!isOpen) return;
     if (transaction) {
       form.reset({
         accountId: transaction.accountId,
@@ -84,7 +85,7 @@ export function TransactionFormModal({
         date: new Date().toISOString().substring(0, 10),
       });
     }
-  }, [transaction, form]);
+  }, [isOpen, transaction, form]);
 
   const handleSubmit = async (data: TransactionFormData) => {
     await onSubmit(data);

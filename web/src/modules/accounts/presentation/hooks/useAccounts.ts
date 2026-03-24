@@ -79,6 +79,23 @@ export function useAccounts() {
     [fetchAccounts],
   );
 
+  const unarchiveAccount = useCallback(
+    async (id: number) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        await accountsRepository.unarchive(id);
+        await fetchAccounts();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error al desarchivar cuenta');
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [fetchAccounts],
+  );
+
   useEffect(() => {
     fetchAccounts();
   }, [fetchAccounts]);
@@ -91,5 +108,6 @@ export function useAccounts() {
     createAccount,
     updateAccount,
     archiveAccount,
+    unarchiveAccount,
   };
 }
