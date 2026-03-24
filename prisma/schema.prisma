@@ -1,5 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// This is your Prisma schema file
 
 generator client {
   provider = "prisma-client-js"
@@ -10,26 +9,55 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//////////////////////////
+// ENUMS
+//////////////////////////
+
+enum AccountType {
+  MAIN
+  DEBT
+  INSTALLMENT
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum DebtStatus {
+  PENDING
+  PARTIAL
+  PAID
+}
+
+//////////////////////////
+// AUTH
+//////////////////////////
+
 model User {
-  id           Int          @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   name         String
-  email        String       @unique
+  email        String   @unique
   passwordHash String
-  active       Boolean      @default(true)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  userRoles    UserRole[]
-  refreshTokens RefreshToken[]
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  userRoles          UserRole[]
+  refreshTokens      RefreshToken[]
   passwordResetCodes PasswordResetCode[]
+
+  accounts Account[]
 
   @@map("users")
 }
 
 model Role {
-  id              Int              @id @default(autoincrement())
-  name            String           @unique
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   userRoles       UserRole[]
   rolePermissions RolePermission[]
 
@@ -37,20 +65,22 @@ model Role {
 }
 
 model Permission {
-  id              Int              @id @default(autoincrement())
-  code            String           @unique
-  description     String?
-  createdAt       DateTime         @default(now())
+  id          Int      @id @default(autoincrement())
+  code        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+
   rolePermissions RolePermission[]
 
   @@map("permissions")
 }
 
 model UserRole {
-  userId    Int
-  roleId    Int
-  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role      Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  userId Int
+  roleId Int
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   @@id([userId, roleId])
   @@map("user_roles")
@@ -59,8 +89,9 @@ model UserRole {
 model RolePermission {
   roleId       Int
   permissionId Int
-  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
   @@id([roleId, permissionId])
   @@map("role_permissions")
@@ -72,7 +103,8 @@ model RefreshToken {
   token     String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("refresh_tokens")
 }
@@ -84,7 +116,115 @@ model PasswordResetCode {
   expiresAt DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("password_reset_codes")
+}
+
+//////////////////////////
+// ACCOUNTS
+//////////////////////////
+
+model Account {
+  id        Int          @id @default(autoincrement())
+  name      String
+  type      AccountType
+  parentId  Int?
+  userId    Int
+  createdAt DateTime     @default(now())
+
+  archived   Boolean   @default(false)
+  archivedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  parent   Account?  @relation("AccountHierarchy", fields: [parentId], references: [id])
+  children Account[] @relation("AccountHierarchy")
+
+  transactions Transaction[]
+  debts        Debt[]
+  installments Installment[]
+
+  @@map("accounts")
+}
+
+model Transaction {
+  id          Int              @id @default(autoincrement())
+  accountId   Int
+  description String
+  amount      Decimal
+  type        TransactionType
+  date        DateTime
+  createdAt   DateTime         @default(now())
+
+  archived   Boolean   @default(false)
+  archivedAt DateTime?
+
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("transactions")
+}
+
+model Debt {
+  id              Int        @id @default(autoincrement())
+  accountId       Int
+  description     String
+  amount          Decimal
+  remainingAmount Decimal
+  status          DebtStatus
+  date            DateTime
+  createdAt       DateTime   @default(now())
+
+  archived   Boolean   @default(false)
+  archivedAt DateTime?
+
+  account  Account       @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  payments DebtPayment[]
+
+  @@map("debts")
+}
+
+model DebtPayment {
+  id        Int      @id @default(autoincrement())
+  debtId    Int
+  amount    Decimal
+  date      DateTime
+  createdAt DateTime @default(now())
+
+  debt Debt @relation(fields: [debtId], references: [id], onDelete: Cascade)
+
+  @@map("debt_payments")
+}
+
+model Installment {
+  id                Int      @id @default(autoincrement())
+  accountId         Int
+  description       String
+  totalAmount       Decimal
+  totalInstallments Int
+  installmentValue  Decimal
+  startDate         DateTime
+  createdAt         DateTime @default(now())
+
+  archived   Boolean   @default(false)
+  archivedAt DateTime?
+
+  account  Account              @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  payments InstallmentPayment[]
+
+  @@map("installments")
+}
+
+model InstallmentPayment {
+  id                Int      @id @default(autoincrement())
+  installmentId     Int
+  installmentNumber Int
+  amount            Decimal
+  paid              Boolean  @default(false)
+  paidDate          DateTime?
+
+  installment Installment @relation(fields: [installmentId], references: [id], onDelete: Cascade)
+
+  @@map("installment_payments")
 }
