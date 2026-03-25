@@ -13,6 +13,7 @@ import { useAccountDetail } from '../hooks/useAccountDetail';
 
 interface AccountDetailViewProps {
   accountId: number;
+  onBack?: () => void;
 }
 
 const backButtonStyle: React.CSSProperties = {
@@ -25,10 +26,14 @@ const backButtonStyle: React.CSSProperties = {
   fontSize: 14,
 };
 
-export function AccountDetailView({ accountId }: AccountDetailViewProps) {
+export function AccountDetailView({ accountId, onBack }: AccountDetailViewProps) {
   const { accountDetail, isLoading, error } = useAccountDetail(accountId);
 
   const handleGoBack = () => {
+    if (onBack) {
+      onBack();
+      return;
+    }
     window.location.href = '/dashboard/accounts';
   };
 

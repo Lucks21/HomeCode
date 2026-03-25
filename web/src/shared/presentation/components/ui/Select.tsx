@@ -46,31 +46,35 @@ export function SelectTrigger({
   children,
   className,
   style,
+  disabled,
 }: {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  disabled?: boolean;
 }) {
   const { open, setOpen } = React.useContext(SelectContext);
   return (
     <button
       type="button"
-      onClick={() => setOpen(!open)}
+      onClick={() => !disabled && setOpen(!open)}
+      disabled={disabled}
       style={{
         display: 'flex',
         height: 40,
         width: '100%',
         alignItems: 'center',
         justifyContent: 'space-between',
-        background: '#1a2332',
+        background: disabled ? '#0f1419' : '#1a2332',
         border: '1px solid #2d3748',
         borderRadius: 8,
-        color: '#e2e8f0',
+        color: disabled ? '#475569' : '#e2e8f0',
         padding: '8px 12px',
         fontSize: 14,
-        cursor: 'pointer',
+        cursor: disabled ? 'not-allowed' : 'pointer',
         outline: 'none',
         boxSizing: 'border-box',
+        opacity: disabled ? 0.6 : 1,
         ...style,
       }}
     >

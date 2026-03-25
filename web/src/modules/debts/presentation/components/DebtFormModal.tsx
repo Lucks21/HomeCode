@@ -107,10 +107,9 @@ export function DebtFormModal({
                   <Select
                     onValueChange={(value) => field.onChange(Number(value))}
                     value={field.value?.toString()}
-                    disabled={isEditing}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger disabled={isEditing}>
                         <SelectValue placeholder="Selecciona una cuenta" />
                       </SelectTrigger>
                     </FormControl>

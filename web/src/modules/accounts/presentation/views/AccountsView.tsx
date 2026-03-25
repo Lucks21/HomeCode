@@ -25,6 +25,7 @@ import { ToastNotifications } from '@/shared/presentation/components/ui/ToastNot
 
 import { AccountsTree } from '../components/AccountsTree';
 import { AccountFormModal } from '../components/AccountFormModal';
+import { AccountDetailView } from './AccountDetailView';
 import { useAccounts } from '../hooks/useAccounts';
 import type { Account, AccountFilters } from '../../domain/types';
 import type { AccountFormData } from '../../application/validations/account.schema';
@@ -46,6 +47,7 @@ export function AccountsView() {
   const [filters, setFilters] = useState<AccountFilters>(defaultFilters);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  const [detailAccountId, setDetailAccountId] = useState<number | null>(null);
 
   const {
     accounts,
@@ -138,7 +140,12 @@ export function AccountsView() {
   };
 
   const handleSelectAccount = (account: Account) => {
-    window.location.href = `/dashboard/accounts/${account.id}`;
+    setDetailAccountId(account.id);
+  };
+
+  const handleCloseDetail = () => {
+    setDetailAccountId(null);
+    fetchAccounts(filters.includeArchived);
   };
 
   const handleFormSubmit = async (data: AccountFormData) => {
@@ -161,6 +168,10 @@ export function AccountsView() {
     setFilters((prev) => ({ ...prev, includeArchived: checked }));
     fetchAccounts(checked);
   };
+
+  if (detailAccountId) {
+    return <AccountDetailView accountId={detailAccountId} onBack={handleCloseDetail} />;
+  }
 
   return (
     <>
