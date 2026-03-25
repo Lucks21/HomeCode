@@ -102,7 +102,8 @@ export function DebtPaymentModal({
                       min={1}
                       max={debt?.remainingAmount ?? undefined}
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      value={field.value === 0 ? '' : field.value}
+                      onChange={(e) => { const v = e.target.value; field.onChange(v === '' ? 0 : Number(v)); }}
                     />
                   </FormControl>
                   <FormMessage>{form.formState.errors.amount?.message}</FormMessage>

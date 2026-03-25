@@ -167,7 +167,8 @@ export function InstallmentFormModal({
                       placeholder="0"
                       min={1}
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      value={field.value === 0 ? '' : field.value}
+                      onChange={(e) => { const v = e.target.value; field.onChange(v === '' ? 0 : Number(v)); }}
                     />
                   </FormControl>
                   <FormMessage>{form.formState.errors.totalAmount?.message}</FormMessage>
@@ -188,7 +189,8 @@ export function InstallmentFormModal({
                       placeholder="1"
                       min={1}
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      value={field.value === 0 ? '' : field.value}
+                      onChange={(e) => { const v = e.target.value; field.onChange(v === '' ? 0 : Number(v)); }}
                     />
                   </FormControl>
                   <FormMessage>{form.formState.errors.totalInstallments?.message}</FormMessage>

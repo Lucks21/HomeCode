@@ -24,22 +24,24 @@ export function Input({ className, style, ...props }: InputProps) {
     ...style,
   };
 
+  const { onFocus: propOnFocus, onBlur: propOnBlur, ...restProps } =
+    props as React.InputHTMLAttributes<HTMLInputElement>;
+
   return (
     <input
       style={inputStyle}
+      {...restProps}
       onFocus={(e) => {
         setFocused(true);
-        // Auto-select "0" so typing replaces it immediately
         if (e.target.value === '0') {
           e.target.select();
         }
-        props.onFocus?.(e);
+        propOnFocus?.(e);
       }}
       onBlur={(e) => {
         setFocused(false);
-        props.onBlur?.(e);
+        propOnBlur?.(e);
       }}
-      {...(props as React.InputHTMLAttributes<HTMLInputElement>)}
     />
   );
 }

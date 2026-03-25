@@ -1,5 +1,6 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
+import { BackButtonHandler } from '@/shared/presentation/components/BackButtonHandler';
 
 export const metadata: Metadata = {
   title: 'HomeCode',
@@ -19,7 +20,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body>{children}</body>
+      <body>
+        <BackButtonHandler />
+        {children}
+      </body>
     </html>
   );
 }

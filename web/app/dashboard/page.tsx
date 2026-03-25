@@ -5,6 +5,7 @@ import {
   DndContext,
   closestCenter,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
@@ -24,7 +25,6 @@ import {
   Calendar,
   Wallet,
   FileText,
-  GripVertical,
   Palette,
   EyeOff,
   Eye,
@@ -32,9 +32,9 @@ import {
 import { accountsRepository } from '@/modules/accounts/infrastructure/repositories/AccountsHttpRepository';
 import { formatCLP } from '@/shared/presentation/components/CurrencyDisplay';
 import { useAuth } from '@/modules/auth/presentation/hooks/useAuth';
-import { useLongPress } from '@/shared/presentation/hooks/useLongPress';
 import { ContextMenu, type ContextMenuItem } from '@/shared/presentation/components/ui/ContextMenu';
 import type { Account } from '@/modules/accounts/domain/types';
+import { MoreVertical } from 'lucide-react';
 
 const STATIC_CARD_IDS = ['ingresos', 'gastos', 'balance', 'deudas', 'cuotas'];
 const STORAGE_KEY = 'dashboard_card_order';
@@ -114,17 +114,10 @@ function SortableCard({
   onHide: () => void;
   children: React.ReactNode;
 }) {
-  const [hovered, setHovered] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [contextOpen, setContextOpen] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id });
-
-  const handleLongPress = useCallback(() => {
-    setContextOpen(true);
-  }, []);
-
-  const longPressHandlers = useLongPress(handleLongPress);
 
   const contextItems: ContextMenuItem[] = [
     {
@@ -143,98 +136,42 @@ function SortableCard({
   return (
     <div
       ref={setNodeRef}
+      {...attributes}
+      {...listeners}
       style={{
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.4 : 1,
         position: 'relative',
-        WebkitUserSelect: 'none',
-        userSelect: 'none',
+        touchAction: 'none',
       }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => { setHovered(false); setPickerOpen(false); }}
-      onContextMenu={(e) => { e.preventDefault(); setContextOpen(true); }}
-      {...longPressHandlers}
     >
-      {/* Hide button */}
+      {/* Options menu button — always visible */}
       <button
         type="button"
-        title="Ocultar tarjeta"
-        onClick={(e) => { e.stopPropagation(); onHide(); }}
-        style={{
-          position: 'absolute',
-          top: 8,
-          right: 64,
-          zIndex: 10,
-          cursor: 'pointer',
-          color: hovered ? '#94a3b8' : 'transparent',
-          transition: 'color 0.15s',
-          width: 24,
-          height: 24,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 4,
-          background: 'none',
-          border: 'none',
-          padding: 0,
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.color = '#ef4444'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.color = hovered ? '#94a3b8' : 'transparent'; }}
-      >
-        <EyeOff size={14} />
-      </button>
-
-      {/* Palette button */}
-      <button
-        type="button"
-        title="Color"
-        onClick={(e) => { e.stopPropagation(); setPickerOpen((p) => !p); }}
-        style={{
-          position: 'absolute',
-          top: 8,
-          right: 36,
-          zIndex: 10,
-          cursor: 'pointer',
-          color: pickerOpen ? '#94a3b8' : hovered ? '#94a3b8' : 'transparent',
-          transition: 'color 0.15s',
-          width: 24,
-          height: 24,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 4,
-          background: 'none',
-          border: 'none',
-          padding: 0,
-        }}
-      >
-        <Palette size={14} />
-      </button>
-
-      {/* Drag handle */}
-      <div
-        {...attributes}
-        {...listeners}
-        title="Mover"
+        title="Opciones"
+        onClick={(e) => { e.stopPropagation(); e.preventDefault(); setContextOpen(true); }}
+        onPointerDown={(e) => e.stopPropagation()}
         style={{
           position: 'absolute',
           top: 8,
           right: 8,
           zIndex: 10,
-          cursor: isDragging ? 'grabbing' : 'grab',
-          color: hovered ? '#94a3b8' : 'transparent',
-          transition: 'color 0.15s',
-          width: 24,
-          height: 24,
+          cursor: 'pointer',
+          color: 'rgba(255,255,255,0.5)',
+          width: 28,
+          height: 28,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: 4,
+          borderRadius: 6,
+          background: 'rgba(0,0,0,0.25)',
+          border: 'none',
+          padding: 0,
         }}
       >
-        <GripVertical size={14} />
-      </div>
+        <MoreVertical size={16} />
+      </button>
 
       {/* Color picker popup */}
       {pickerOpen && (
@@ -422,6 +359,7 @@ export default function DashboardPage() {
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
   );
 
   // Monthly summary
