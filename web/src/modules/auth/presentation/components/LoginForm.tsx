@@ -5,11 +5,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useLogin } from '../hooks/useLogin';
 import styles from './LoginForm.module.css';
 import { apiBaseUrl } from '@/shared/infrastructure/http/HttpClient';
 
 export function LoginForm() {
+  const router = useRouter();
   const { login, isLoading, error } = useLogin();
 
   const [email, setEmail] = useState('');
@@ -36,22 +38,7 @@ export function LoginForm() {
     try {
       await login({ email: submittedEmail, password: submittedPassword });
       setLoginStatus('Login OK. Redirigiendo...');
-
-      // Establecer cookies manualmente para que el middleware las vea inmediatamente
-      const accessToken = localStorage.getItem('access_token');
-      const refreshToken = localStorage.getItem('refresh_token');
-
-      if (accessToken && refreshToken) {
-        // Cookies sin secure para desarrollo (http://localhost)
-        document.cookie = `access_token=${accessToken}; path=/; max-age=${60 * 15}; SameSite=Lax`;
-        document.cookie = `refresh_token=${refreshToken}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
-      }
-
-      // Esperar un momento para que las cookies se establezcan
-      await new Promise((resolve) => setTimeout(resolve, 200));
-
-      // Usar window.location para forzar recarga y que el middleware vea las cookies
-      window.location.href = '/dashboard';
+      router.replace('/dashboard');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error desconocido al iniciar sesión';
       setLoginStatus(`Login falló: ${errorMessage}`);
