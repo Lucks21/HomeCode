@@ -1,3 +1,5 @@
+import { Capacitor, CapacitorHttp } from '@capacitor/core';
+
 const ENV_API_BASE_URL = process.env['NEXT_PUBLIC_API_URL'];
 
 const BASE_URL =
@@ -18,6 +20,13 @@ interface RequestConfig {
   token?: string;
 }
 
+interface ResponseLike {
+  ok: boolean;
+  status: number;
+  statusText: string;
+  json: () => Promise<unknown>;
+}
+
 export class HttpClient {
   private baseUrl: string;
   private isRefreshing = false;
@@ -35,6 +44,49 @@ export class HttpClient {
     }
   }
 
+  private shouldUseNativeHttp(): boolean {
+    return typeof window !== 'undefined' && Capacitor.isNativePlatform();
+  }
+
+  private async sendRequest(url: string, options: RequestInit = {}): Promise<ResponseLike> {
+    if (!this.shouldUseNativeHttp()) {
+      const response = await fetch(url, options);
+      return {
+        ok: response.ok,
+        status: response.status,
+        statusText: response.statusText,
+        json: async () => response.json(),
+      };
+    }
+
+    const headers = { ...(options.headers as Record<string, string> | undefined) };
+    const contentType = headers['Content-Type'] ?? headers['content-type'];
+    let data: unknown;
+
+    if (options.body !== undefined) {
+      if (typeof options.body === 'string' && contentType?.includes('application/json')) {
+        data = JSON.parse(options.body);
+      } else {
+        data = options.body;
+      }
+    }
+
+    const response = await CapacitorHttp.request({
+      url,
+      method: options.method,
+      headers,
+      data,
+      responseType: 'json',
+    });
+
+    return {
+      ok: response.status >= 200 && response.status < 300,
+      status: response.status,
+      statusText: `${response.status}`,
+      json: async () => response.data,
+    };
+  }
+
   private async tryRefreshToken(): Promise<boolean> {
     if (typeof window === 'undefined') return false;
 
@@ -42,7 +94,7 @@ export class HttpClient {
     if (!refreshToken) return false;
 
     try {
-      const response = await fetch(`${this.baseUrl}/auth/refresh`, {
+      const response = await this.sendRequest(`${this.baseUrl}/auth/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refreshToken }),
@@ -90,10 +142,10 @@ export class HttpClient {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${this.baseUrl}${path}`, {
-      ...options,
-      headers,
-    });
+      const response = await this.sendRequest(`${this.baseUrl}${path}`, {
+        ...options,
+        headers,
+      });
 
     if (!response.ok) {
       if (response.status === 401 && typeof window !== 'undefined' && !isRetry) {
