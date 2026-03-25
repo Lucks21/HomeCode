@@ -19,7 +19,7 @@ const barStyle: React.CSSProperties = {
 
 const gridStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(4, 1fr)',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
   gap: '12px',
   alignItems: 'end',
 };
@@ -136,7 +136,7 @@ export function TransactionsFiltersBar({
       </div>
 
       {hasActiveFilters && (
-        <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
+        <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 8 }}>
           <button style={clearButtonStyle} onClick={onClearFilters}>
             Limpiar filtros
           </button>

@@ -1,0 +1,25 @@
+.shell {
+  display: flex;
+  min-height: 100vh;
+  background: #0b0f19;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  margin-left: 250px;
+  padding: 32px;
+  background: #0b0f19;
+}
+
+@media (max-width: 768px) {
+  .shell {
+    display: block;
+    padding-bottom: 84px;
+  }
+
+  .content {
+    margin-left: 0;
+    padding: 16px 16px 100px;
+  }
+}

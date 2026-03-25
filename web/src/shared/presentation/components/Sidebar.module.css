@@ -84,3 +84,66 @@
   background-color: rgba(239, 68, 68, 0.08);
   color: #ef4444;
 }
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    min-height: 0;
+    height: auto;
+    flex-direction: row;
+    align-items: stretch;
+    top: auto;
+    bottom: 0;
+    border-right: none;
+    border-top: 1px solid #1a1f35;
+    background-color: rgba(15, 19, 32, 0.98);
+    backdrop-filter: blur(10px);
+  }
+
+  .logo {
+    display: none;
+  }
+
+  .nav {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 10px 12px;
+    scrollbar-width: none;
+  }
+
+  .nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .navItem {
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    min-width: 72px;
+    padding: 8px 10px;
+    font-size: 0.72rem;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .footer {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px 10px 0;
+    border-top: none;
+    border-left: 1px solid #1a1f35;
+  }
+
+  .logoutButton {
+    width: auto;
+    min-width: 48px;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .logoutButton span {
+    display: none;
+  }
+}

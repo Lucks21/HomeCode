@@ -8,6 +8,9 @@ interface DialogProps {
 
 export function Dialog({ open, onOpenChange, children }: DialogProps) {
   if (!open) return null;
+
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+
   return (
     <div
       style={{
@@ -15,8 +18,9 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
         inset: 0,
         zIndex: 50,
         display: 'flex',
-        alignItems: 'center',
+        alignItems: isMobile ? 'flex-start' : 'center',
         justifyContent: 'center',
+        padding: isMobile ? '12px' : '16px',
       }}
     >
       <div
@@ -49,12 +53,10 @@ export function DialogContent({
         borderRadius: 16,
         color: '#e2e8f0',
         boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
-        padding: 24,
+        padding: 16,
         width: '100%',
         maxWidth: 512,
-        marginLeft: 16,
-        marginRight: 16,
-        maxHeight: '90vh',
+        maxHeight: 'calc(100vh - 24px)',
         overflowY: 'auto',
         ...style,
       }}
