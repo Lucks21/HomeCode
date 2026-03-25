@@ -5,8 +5,14 @@ import type { InstallmentFormData } from '../../application/validations/installm
 export class InstallmentsHttpRepository {
   private readonly basePath = '/installments';
 
-  async getAll(): Promise<Installment[]> {
-    const response = await httpClient.get<ApiResponse<Installment[]>>(this.basePath);
+  async getAll(filters?: { includeArchived?: boolean }): Promise<Installment[]> {
+    const params = new URLSearchParams();
+    if (filters?.includeArchived) {
+      params.append('includeArchived', 'true');
+    }
+    const query = params.toString();
+    const url = query ? `${this.basePath}?${query}` : this.basePath;
+    const response = await httpClient.get<ApiResponse<Installment[]>>(url);
     return response.data;
   }
 
@@ -26,6 +32,10 @@ export class InstallmentsHttpRepository {
 
   async archive(id: number): Promise<void> {
     await httpClient.patch<ApiResponse<void>>(`${this.basePath}/${id}/archive`, {});
+  }
+
+  async unarchive(id: number): Promise<void> {
+    await httpClient.patch<ApiResponse<void>>(`${this.basePath}/${id}/unarchive`, {});
   }
 }
 

@@ -4,8 +4,10 @@
  * Componente para renderizar cuentas en estructura de arbol con tarjetas dark
  */
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Wallet, FileText, Calendar, ChevronRight, Pencil, Archive, ArchiveRestore, LayoutDashboard } from 'lucide-react';
+import { useLongPress } from '@/shared/presentation/hooks/useLongPress';
+import { ContextMenu } from '@/shared/presentation/components/ui/ContextMenu';
 import type { Account } from '../../domain/types';
 
 const typeConfig: Record<
@@ -64,8 +66,51 @@ function AccountCard({
   onToggleDashboard: (account: Account, show: boolean) => void;
 }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [contextOpen, setContextOpen] = useState(false);
   const config = typeConfig[account.type] || typeConfig.MAIN;
   const IconComponent = config.icon;
+
+  const handleLongPress = useCallback(() => {
+    setContextOpen(true);
+  }, []);
+
+  const longPressHandlers = useLongPress(handleLongPress);
+
+  const contextItems = [
+    {
+      label: 'Editar',
+      icon: <Pencil size={15} />,
+      onClick: () => onEdit(account),
+    },
+    ...(!account.archived
+      ? [
+          {
+            label: account.showInDashboard ? 'Quitar del dashboard' : 'Mostrar en dashboard',
+            icon: <LayoutDashboard size={15} />,
+            color: account.showInDashboard ? '#ef4444' : '#10b981',
+            onClick: () => onToggleDashboard(account, !account.showInDashboard),
+          },
+          {
+            label: 'Archivar',
+            icon: <Archive size={15} />,
+            color: '#fbbf24',
+            onClick: () => onArchive(account),
+          },
+        ]
+      : [
+          {
+            label: 'Desarchivar',
+            icon: <ArchiveRestore size={15} />,
+            color: '#10b981',
+            onClick: () => onUnarchive(account),
+          },
+        ]),
+    {
+      label: 'Ver detalle',
+      icon: <ChevronRight size={15} />,
+      onClick: () => onSelect(account),
+    },
+  ];
 
   return (
     <>
@@ -85,10 +130,15 @@ function AccountCard({
           filter: isHovered ? 'brightness(1.08)' : 'brightness(1)',
           opacity: account.archived ? 0.6 : 1,
           flexWrap: 'wrap',
+          position: 'relative',
+          WebkitUserSelect: 'none',
+          userSelect: 'none',
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => onSelect(account)}
+        onContextMenu={(e) => { e.preventDefault(); setContextOpen(true); }}
+        {...longPressHandlers}
       >
         {/* Icon circle */}
         <div
@@ -311,6 +361,13 @@ function AccountCard({
         <ChevronRight
           size={20}
           style={{ color: '#475569', flexShrink: 0 }}
+        />
+
+        {/* Long-press context menu */}
+        <ContextMenu
+          items={contextItems}
+          open={contextOpen}
+          onClose={() => setContextOpen(false)}
         />
       </div>
 

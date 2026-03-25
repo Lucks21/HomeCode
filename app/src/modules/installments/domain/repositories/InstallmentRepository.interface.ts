@@ -4,6 +4,7 @@ import { InstallmentPayment } from '../entities/InstallmentPayment.entity';
 export interface InstallmentFilters {
   page?: number;
   perPage?: number;
+  includeArchived?: boolean;
 }
 
 export interface InstallmentRepository {

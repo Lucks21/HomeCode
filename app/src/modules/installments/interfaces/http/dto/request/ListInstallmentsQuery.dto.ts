@@ -1,4 +1,4 @@
-import { IsOptional, IsNumberString } from 'class-validator';
+import { IsOptional, IsNumberString, IsBooleanString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ListInstallmentsQueryDto {
@@ -11,4 +11,9 @@ export class ListInstallmentsQueryDto {
   @IsOptional()
   @IsNumberString({}, { message: 'El perPage debe ser un número' })
   perPage?: string;
+
+  @ApiProperty({ description: 'Incluir archivados', required: false, example: 'true' })
+  @IsOptional()
+  @IsBooleanString({ message: 'includeArchived debe ser true o false' })
+  includeArchived?: string;
 }

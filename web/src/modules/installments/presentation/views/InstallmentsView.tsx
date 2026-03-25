@@ -21,6 +21,7 @@ export function InstallmentsView() {
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
   const [selectedInstallment, setSelectedInstallment] = useState<Installment | null>(null);
   const [detailInstallmentId, setDetailInstallmentId] = useState<number | null>(null);
+  const [includeArchived, setIncludeArchived] = useState(false);
 
   const {
     installments,
@@ -30,6 +31,7 @@ export function InstallmentsView() {
     createInstallment,
     payInstallments,
     archiveInstallment,
+    unarchiveInstallment,
   } = useInstallments();
 
   const { installment: installmentDetail, refetch: refetchDetail } =
@@ -47,6 +49,11 @@ export function InstallmentsView() {
     };
     loadAccounts();
   }, []);
+
+  // Refetch when includeArchived changes
+  useEffect(() => {
+    fetchInstallments(includeArchived ? { includeArchived: true } : undefined);
+  }, [includeArchived, fetchInstallments]);
 
   const handleCreate = () => setIsFormModalOpen(true);
 
@@ -67,8 +74,20 @@ export function InstallmentsView() {
   const handleArchive = async (installment: Installment) => {
     try {
       await archiveInstallment(installment.id);
+      if (includeArchived) {
+        await fetchInstallments({ includeArchived: true });
+      }
     } catch (err) {
       console.error('Error al archivar:', err);
+    }
+  };
+
+  const handleUnarchive = async (installment: Installment) => {
+    try {
+      await unarchiveInstallment(installment.id);
+      await fetchInstallments({ includeArchived });
+    } catch (err) {
+      console.error('Error al desarchivar:', err);
     }
   };
 
@@ -146,19 +165,19 @@ export function InstallmentsView() {
           <div className="flex-stats-row" style={{ marginBottom: 20 }}>
             <div>
               <p style={{ color: '#94a3b8', fontSize: 13, marginBottom: 4 }}>Monto Total</p>
-              <p style={{ color: '#f1f5f9', fontWeight: 600, fontSize: 18, margin: 0 }}>
+              <p style={{ color: '#f1f5f9', fontWeight: 600, fontSize: 'clamp(0.95rem, 4vw, 1.125rem)', margin: 0, wordBreak: 'break-word' }}>
                 {formatCLP(installmentDetail.totalAmount)}
               </p>
             </div>
             <div>
               <p style={{ color: '#94a3b8', fontSize: 13, marginBottom: 4 }}>Valor Cuota</p>
-              <p style={{ color: '#f1f5f9', fontWeight: 600, fontSize: 18, margin: 0 }}>
+              <p style={{ color: '#f1f5f9', fontWeight: 600, fontSize: 'clamp(0.95rem, 4vw, 1.125rem)', margin: 0, wordBreak: 'break-word' }}>
                 {formatCLP(installmentDetail.installmentValue)}
               </p>
             </div>
             <div>
               <p style={{ color: '#94a3b8', fontSize: 13, marginBottom: 4 }}>Monto Restante</p>
-              <p style={{ color: '#f1f5f9', fontWeight: 600, fontSize: 18, margin: 0 }}>
+              <p style={{ color: '#f1f5f9', fontWeight: 600, fontSize: 'clamp(0.95rem, 4vw, 1.125rem)', margin: 0, wordBreak: 'break-word' }}>
                 {formatCLP(remaining > 0 ? remaining : 0)}
               </p>
             </div>
@@ -338,11 +357,25 @@ export function InstallmentsView() {
         </div>
       )}
 
+      {/* Ver archivados toggle */}
+      <div style={{ marginBottom: 16 }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+          <input
+            type="checkbox"
+            checked={includeArchived}
+            onChange={(e) => setIncludeArchived(e.target.checked)}
+            style={{ accentColor: '#10b981' }}
+          />
+          <span style={{ color: '#94a3b8', fontSize: 13 }}>Ver archivados</span>
+        </label>
+      </div>
+
       <InstallmentsTable
         installments={installments}
         onViewDetail={handleViewDetail}
         onPay={handlePay}
         onArchive={handleArchive}
+        onUnarchive={handleUnarchive}
       />
 
       <InstallmentFormModal

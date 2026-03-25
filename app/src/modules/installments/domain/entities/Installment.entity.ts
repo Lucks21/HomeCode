@@ -64,6 +64,11 @@ export class Installment {
     this.archivedAt = new Date();
   }
 
+  unarchive(): void {
+    this.archived = false;
+    this.archivedAt = null;
+  }
+
   toPrimitives() {
     return {
       id: this.id,

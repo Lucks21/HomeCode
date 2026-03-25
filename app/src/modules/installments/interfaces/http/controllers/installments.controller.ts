@@ -19,6 +19,7 @@ import { PayInstallmentsUseCase } from '../../../application/use-cases/PayInstal
 import { GetInstallmentDetailUseCase } from '../../../application/use-cases/GetInstallmentDetail.usecase';
 import { ListInstallmentsUseCase } from '../../../application/use-cases/ListInstallments.usecase';
 import { ArchiveInstallmentUseCase } from '../../../application/use-cases/ArchiveInstallment.usecase';
+import { UnarchiveInstallmentUseCase } from '../../../application/use-cases/UnarchiveInstallment.usecase';
 import { CreateInstallmentCommand } from '../../../application/commands/CreateInstallmentCommand';
 import { PayInstallmentsCommand } from '../../../application/commands/PayInstallmentsCommand';
 import { CreateInstallmentRequestDto } from '../dto/request/CreateInstallmentRequest.dto';
@@ -36,6 +37,7 @@ export class InstallmentsController {
     private readonly getInstallmentDetailUseCase: GetInstallmentDetailUseCase,
     private readonly listInstallmentsUseCase: ListInstallmentsUseCase,
     private readonly archiveInstallmentUseCase: ArchiveInstallmentUseCase,
+    private readonly unarchiveInstallmentUseCase: UnarchiveInstallmentUseCase,
   ) {}
 
   @Post()
@@ -88,6 +90,7 @@ export class InstallmentsController {
     const filters = {
       page: query.page ? parseInt(query.page) : undefined,
       perPage: query.perPage ? parseInt(query.perPage) : undefined,
+      includeArchived: query.includeArchived === 'true',
     };
 
     const result = await this.listInstallmentsUseCase.execute(req.user.id, filters);
@@ -123,6 +126,20 @@ export class InstallmentsController {
 
     return {
       message: 'Plan de cuotas archivado exitosamente',
+      data: installment.toPrimitives(),
+    };
+  }
+
+  @Patch(':id/unarchive')
+  @ApiOperation({ summary: 'Desarchivar plan de cuotas', description: 'Desarchiva un plan de cuotas previamente archivado.' })
+  @ApiParam({ name: 'id', type: Number, description: 'ID del plan de cuotas' })
+  @ApiResponse({ status: 200, description: 'Plan de cuotas desarchivado' })
+  @ApiResponse({ status: 404, description: 'Plan de cuotas no encontrado' })
+  async unarchiveInstallment(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
+    const installment = await this.unarchiveInstallmentUseCase.execute(id, req.user.id);
+
+    return {
+      message: 'Plan de cuotas desarchivado exitosamente',
       data: installment.toPrimitives(),
     };
   }

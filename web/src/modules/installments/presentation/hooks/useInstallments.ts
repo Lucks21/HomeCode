@@ -10,11 +10,11 @@ export function useInstallments() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchInstallments = useCallback(async () => {
+  const fetchInstallments = useCallback(async (filters?: { includeArchived?: boolean }) => {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await installmentsRepository.getAll();
+      const data = await installmentsRepository.getAll(filters);
       setInstallments(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar cuotas');
@@ -75,6 +75,23 @@ export function useInstallments() {
     [],
   );
 
+  const unarchiveInstallment = useCallback(
+    async (id: number) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        await installmentsRepository.unarchive(id);
+        await fetchInstallments();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error al desarchivar');
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [fetchInstallments],
+  );
+
   useEffect(() => {
     fetchInstallments();
   }, [fetchInstallments]);
@@ -87,5 +104,6 @@ export function useInstallments() {
     createInstallment,
     payInstallments,
     archiveInstallment,
+    unarchiveInstallment,
   };
 }

@@ -32,6 +32,8 @@ import {
 import { accountsRepository } from '@/modules/accounts/infrastructure/repositories/AccountsHttpRepository';
 import { formatCLP } from '@/shared/presentation/components/CurrencyDisplay';
 import { useAuth } from '@/modules/auth/presentation/hooks/useAuth';
+import { useLongPress } from '@/shared/presentation/hooks/useLongPress';
+import { ContextMenu, type ContextMenuItem } from '@/shared/presentation/components/ui/ContextMenu';
 import type { Account } from '@/modules/accounts/domain/types';
 
 const STATIC_CARD_IDS = ['ingresos', 'gastos', 'balance', 'deudas', 'cuotas'];
@@ -114,8 +116,29 @@ function SortableCard({
 }) {
   const [hovered, setHovered] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [contextOpen, setContextOpen] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id });
+
+  const handleLongPress = useCallback(() => {
+    setContextOpen(true);
+  }, []);
+
+  const longPressHandlers = useLongPress(handleLongPress);
+
+  const contextItems: ContextMenuItem[] = [
+    {
+      label: 'Ocultar tarjeta',
+      icon: <EyeOff size={15} />,
+      color: '#ef4444',
+      onClick: onHide,
+    },
+    {
+      label: 'Cambiar color',
+      icon: <Palette size={15} />,
+      onClick: () => setPickerOpen(true),
+    },
+  ];
 
   return (
     <div
@@ -125,9 +148,13 @@ function SortableCard({
         transition,
         opacity: isDragging ? 0.4 : 1,
         position: 'relative',
+        WebkitUserSelect: 'none',
+        userSelect: 'none',
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => { setHovered(false); setPickerOpen(false); }}
+      onContextMenu={(e) => { e.preventDefault(); setContextOpen(true); }}
+      {...longPressHandlers}
     >
       {/* Hide button */}
       <button
@@ -261,6 +288,13 @@ function SortableCard({
         </>
       )}
 
+      {/* Long-press context menu */}
+      <ContextMenu
+        items={contextItems}
+        open={contextOpen}
+        onClose={() => setContextOpen(false)}
+      />
+
       {children}
     </div>
   );
@@ -365,7 +399,7 @@ function PinnedAccountCard({ account, summary, bg }: { account: Account; summary
           {account.name}
         </span>
       </div>
-      <span style={{ fontSize: '1.4rem', fontWeight: 700, color: balanceColor }}>
+      <span style={{ fontSize: 'clamp(1rem, 4.5vw, 1.4rem)', fontWeight: 700, color: balanceColor, wordBreak: 'break-word', overflowWrap: 'break-word' }}>
         {formatCLP(summary.balance)}
       </span>
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: secondaryColor }}>

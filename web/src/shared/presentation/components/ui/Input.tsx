@@ -29,6 +29,10 @@ export function Input({ className, style, ...props }: InputProps) {
       style={inputStyle}
       onFocus={(e) => {
         setFocused(true);
+        // Auto-select "0" so typing replaces it immediately
+        if (e.target.value === '0') {
+          e.target.select();
+        }
         props.onFocus?.(e);
       }}
       onBlur={(e) => {

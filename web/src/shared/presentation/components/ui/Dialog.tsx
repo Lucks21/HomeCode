@@ -9,8 +9,6 @@ interface DialogProps {
 export function Dialog({ open, onOpenChange, children }: DialogProps) {
   if (!open) return null;
 
-  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-
   return (
     <div
       style={{
@@ -18,12 +16,9 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
         inset: 0,
         zIndex: 200,
         display: 'flex',
-        alignItems: isMobile ? 'flex-start' : 'center',
+        alignItems: 'center',
         justifyContent: 'center',
-        padding: isMobile ? '16px' : '16px',
-        paddingTop: isMobile
-          ? 'max(16px, env(safe-area-inset-top, 16px))'
-          : '16px',
+        padding: '16px',
       }}
     >
       <div
@@ -59,7 +54,7 @@ export function DialogContent({
         padding: 16,
         width: '100%',
         maxWidth: 512,
-        maxHeight: 'calc(100vh - 24px)',
+        maxHeight: 'calc(100vh - 48px)',
         overflowY: 'auto',
         ...style,
       }}

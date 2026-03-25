@@ -150,7 +150,7 @@ export class PrismaInstallmentRepository implements InstallmentRepository {
 
     const where: any = {
       accountId: { in: accountIds },
-      archived: false,
+      ...(filters.includeArchived ? {} : { archived: false }),
     };
 
     const [records, total] = await Promise.all([

@@ -7,6 +7,7 @@ import { PayInstallmentsUseCase } from '../application/use-cases/PayInstallments
 import { GetInstallmentDetailUseCase } from '../application/use-cases/GetInstallmentDetail.usecase';
 import { ListInstallmentsUseCase } from '../application/use-cases/ListInstallments.usecase';
 import { ArchiveInstallmentUseCase } from '../application/use-cases/ArchiveInstallment.usecase';
+import { UnarchiveInstallmentUseCase } from '../application/use-cases/UnarchiveInstallment.usecase';
 import { InstallmentsController } from '../interfaces/http/controllers/installments.controller';
 
 @Module({
@@ -18,6 +19,7 @@ import { InstallmentsController } from '../interfaces/http/controllers/installme
     GetInstallmentDetailUseCase,
     ListInstallmentsUseCase,
     ArchiveInstallmentUseCase,
+    UnarchiveInstallmentUseCase,
   ],
   exports: [InstallmentsPersistenceModule],
 })

@@ -7,6 +7,7 @@ interface InstallmentsTableProps {
   onViewDetail: (installment: Installment) => void;
   onPay: (installment: Installment) => void;
   onArchive: (installment: Installment) => void;
+  onUnarchive?: (installment: Installment) => void;
 }
 
 const formatCLP = (amount: number) =>
@@ -22,6 +23,7 @@ export function InstallmentsTable({
   onViewDetail,
   onPay,
   onArchive,
+  onUnarchive,
 }: InstallmentsTableProps) {
   if (installments.length === 0) {
     return (
@@ -138,7 +140,23 @@ export function InstallmentsTable({
               style={{ display: 'flex', gap: 8 }}
               onClick={(e) => e.stopPropagation()}
             >
-              {!isPaidOff ? (
+              {inst.archived && onUnarchive ? (
+                <button
+                  onClick={() => onUnarchive(inst)}
+                  style={{
+                    border: '1px solid #10b981',
+                    color: '#10b981',
+                    background: 'transparent',
+                    borderRadius: 8,
+                    padding: '8px 16px',
+                    cursor: 'pointer',
+                    fontSize: 14,
+                    fontWeight: 500,
+                  }}
+                >
+                  Desarchivar
+                </button>
+              ) : !isPaidOff ? (
                 <button
                   onClick={() => onPay(inst)}
                   style={{
