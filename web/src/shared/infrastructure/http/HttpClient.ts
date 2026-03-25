@@ -1,7 +1,9 @@
+const ENV_API_BASE_URL = process.env['NEXT_PUBLIC_API_URL'];
+
 const BASE_URL =
   (typeof window !== 'undefined' &&
     (window as Window & typeof globalThis & { __API_BASE_URL__?: string }).__API_BASE_URL__) ||
-  (typeof process !== 'undefined' && process.env['NEXT_PUBLIC_API_URL']) ||
+  ENV_API_BASE_URL ||
   'http://localhost:3000/api';
 
 export interface ApiResponse<T> {
