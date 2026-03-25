@@ -7,12 +7,15 @@
 import { useState } from 'react';
 import { useLogin } from '../hooks/useLogin';
 import styles from './LoginForm.module.css';
+import { apiBaseUrl } from '@/shared/infrastructure/http/HttpClient';
 
 export function LoginForm() {
   const { login, isLoading, error } = useLogin();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [connectionStatus, setConnectionStatus] = useState<string | null>(null);
+  const [isCheckingConnection, setIsCheckingConnection] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +40,24 @@ export function LoginForm() {
       window.location.href = '/dashboard';
     } catch {
       // El error ya está manejado por el hook.
+    }
+  };
+
+  const handleCheckConnection = async () => {
+    setIsCheckingConnection(true);
+    setConnectionStatus(null);
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/api`, {
+        method: 'GET',
+      });
+
+      setConnectionStatus(`Conexión OK (${response.status}) - ${apiBaseUrl}`);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? `${err.name}: ${err.message}` : 'Error desconocido';
+      setConnectionStatus(`Conexión falló - ${apiBaseUrl} - ${errorMessage}`);
+    } finally {
+      setIsCheckingConnection(false);
     }
   };
 
@@ -81,9 +102,19 @@ export function LoginForm() {
         </div>
 
         {error && <p className={styles.error}>{error}</p>}
+        {connectionStatus && <p className={styles.status}>{connectionStatus}</p>}
 
         <button type="submit" disabled={isLoading || !email || !password} className={styles.submit}>
           {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+        </button>
+
+        <button
+          type="button"
+          disabled={isCheckingConnection}
+          className={styles.secondaryButton}
+          onClick={handleCheckConnection}
+        >
+          {isCheckingConnection ? 'Probando conexion...' : 'Probar conexion'}
         </button>
       </form>
 
@@ -91,6 +122,11 @@ export function LoginForm() {
         <a href="/reset-password" className={styles.link}>
           ¿Olvidaste tu contraseña?
         </a>
+
+        <div className={styles.devBox}>
+          <p className={styles.devTitle}>URL API actual</p>
+          <div className={styles.monospace}>{apiBaseUrl}</div>
+        </div>
 
         {process.env.NODE_ENV === 'development' && (
           <div className={styles.devBox}>

@@ -67,6 +67,18 @@
   font-size: 0.88rem;
 }
 
+.status {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 8px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #a7f3d0;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
 .submit {
   border: 0;
   border-radius: 8px;
@@ -84,6 +96,26 @@
 
 .submit:disabled {
   background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 11px 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  background: #1e293b;
+  cursor: pointer;
+}
+
+.secondaryButton:hover {
+  background: #334155;
+}
+
+.secondaryButton:disabled {
+  opacity: 0.7;
   cursor: not-allowed;
 }
 
@@ -113,4 +145,9 @@
 .devTitle {
   margin: 0 0 4px;
   font-weight: 700;
+}
+
+.monospace {
+  font-family: Consolas, 'Courier New', monospace;
+  word-break: break-word;
 }

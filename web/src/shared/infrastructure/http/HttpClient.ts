@@ -6,6 +6,8 @@ const BASE_URL =
   ENV_API_BASE_URL ||
   'http://localhost:3000/api';
 
+export const apiBaseUrl = BASE_URL;
+
 export interface ApiResponse<T> {
   message?: string;
   data: T;
@@ -163,4 +165,4 @@ export class HttpClient {
   }
 }
 
-export const httpClient = new HttpClient(BASE_URL);
+export const httpClient = new HttpClient(apiBaseUrl);
