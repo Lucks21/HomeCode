@@ -46,13 +46,35 @@ export function VerifyCodeForm({ email, onSuccess, onResend }: VerifyCodeFormPro
     }
   };
 
+  const isSubmitDisabled = isLoading || code.length !== 6 || timeLeft <= 0;
+
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="bg-white shadow-lg rounded-xl p-8 border border-gray-100">
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+    <div style={{ width: '100%', maxWidth: 448, margin: '0 auto' }}>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <div
+        style={{
+          background: '#111827',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
+          borderRadius: 12,
+          padding: 32,
+          border: '1px solid #1e293b',
+        }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 64,
+              height: 64,
+              background: 'rgba(16, 185, 129, 0.15)',
+              borderRadius: '50%',
+              marginBottom: 16,
+            }}
+          >
             <svg
-              className="w-8 h-8 text-green-600"
+              style={{ width: 32, height: 32, color: '#10b981' }}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -65,20 +87,46 @@ export function VerifyCodeForm({ email, onSuccess, onResend }: VerifyCodeFormPro
               />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-800">Verifica tu código</h2>
-          <p className="text-sm text-gray-500 mt-1">Hemos enviado un código de 6 dígitos a</p>
-          <p className="text-sm font-semibold text-blue-600 mt-1">{email}</p>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f1f5f9', margin: '0 0 4px' }}>
+            Verifica tu código
+          </h2>
+          <p style={{ fontSize: '0.875rem', color: '#64748b', marginTop: 4, marginBottom: 0 }}>
+            Hemos enviado un código de 6 dígitos a
+          </p>
+          <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#10b981', marginTop: 4, marginBottom: 0 }}>
+            {email}
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div>
-            <label htmlFor="code" className="block text-sm font-semibold text-gray-700 mb-2">
+            <label
+              htmlFor="code"
+              style={{
+                display: 'block',
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                color: '#e2e8f0',
+                marginBottom: 8,
+              }}
+            >
               Código de verificación
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div style={{ position: 'relative' }}>
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  paddingLeft: 12,
+                  display: 'flex',
+                  alignItems: 'center',
+                  pointerEvents: 'none',
+                }}
+              >
                 <svg
-                  className="h-5 w-5 text-gray-400"
+                  style={{ height: 20, width: 20, color: '#64748b' }}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -98,45 +146,92 @@ export function VerifyCodeForm({ email, onSuccess, onResend }: VerifyCodeFormPro
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                 required
                 disabled={isLoading}
-                className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed transition-colors text-center text-2xl tracking-widest font-mono"
+                style={{
+                  width: '100%',
+                  paddingLeft: 40,
+                  paddingRight: 12,
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  border: '1px solid #2d3748',
+                  borderRadius: 8,
+                  outline: 'none',
+                  background: isLoading ? '#0b0f19' : '#1a2332',
+                  color: '#e2e8f0',
+                  fontSize: '1.5rem',
+                  textAlign: 'center',
+                  letterSpacing: '0.15em',
+                  fontFamily: 'monospace',
+                  boxSizing: 'border-box',
+                }}
+                onFocus={(e) => (e.currentTarget.style.boxShadow = '0 0 0 2px #10b981')}
+                onBlur={(e) => (e.currentTarget.style.boxShadow = 'none')}
                 placeholder="000000"
                 maxLength={6}
                 autoComplete="off"
               />
             </div>
-            <p className="text-xs text-gray-500 mt-2">
+            <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: 8, marginBottom: 0 }}>
               Ingresa el código de 6 dígitos que recibiste por correo
             </p>
           </div>
 
           {timeLeft > 0 ? (
-            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-md">
-              <div className="flex items-center">
-                <svg className="h-5 w-5 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <div
+              style={{
+                background: 'rgba(16, 185, 129, 0.1)',
+                borderLeft: '4px solid #10b981',
+                padding: 16,
+                borderRadius: 6,
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <svg
+                  style={{ height: 20, width: 20, color: '#10b981', marginRight: 8 }}
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
                   <path
                     fillRule="evenodd"
                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
                     clipRule="evenodd"
                   />
                 </svg>
-                <p className="text-sm text-blue-700">
-                  El código expira en: <span className="font-bold">{formatTime(timeLeft)}</span>
+                <p style={{ fontSize: '0.875rem', color: '#a7f3d0', margin: 0 }}>
+                  El código expira en: <span style={{ fontWeight: 700 }}>{formatTime(timeLeft)}</span>
                 </p>
               </div>
             </div>
           ) : (
-            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-              <p className="text-sm text-red-700 font-medium">
+            <div
+              style={{
+                background: 'rgba(239, 68, 68, 0.1)',
+                borderLeft: '4px solid #ef4444',
+                padding: 16,
+                borderRadius: 6,
+              }}
+            >
+              <p style={{ fontSize: '0.875rem', color: '#fca5a5', fontWeight: 500, margin: 0 }}>
                 El código ha expirado. Por favor, solicita uno nuevo.
               </p>
             </div>
           )}
 
           {error && (
-            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+            <div
+              style={{
+                background: 'rgba(239, 68, 68, 0.1)',
+                borderLeft: '4px solid #ef4444',
+                padding: 16,
+                borderRadius: 6,
+              }}
+            >
+              <div style={{ display: 'flex' }}>
+                <div style={{ flexShrink: 0 }}>
+                  <svg
+                    style={{ height: 20, width: 20, color: '#ef4444' }}
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path
                       fillRule="evenodd"
                       d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -144,8 +239,10 @@ export function VerifyCodeForm({ email, onSuccess, onResend }: VerifyCodeFormPro
                     />
                   </svg>
                 </div>
-                <div className="ml-3">
-                  <p className="text-sm text-red-700 font-medium">{error}</p>
+                <div style={{ marginLeft: 12 }}>
+                  <p style={{ fontSize: '0.875rem', color: '#fca5a5', fontWeight: 500, margin: 0 }}>
+                    {error}
+                  </p>
                 </div>
               </div>
             </div>
@@ -153,18 +250,41 @@ export function VerifyCodeForm({ email, onSuccess, onResend }: VerifyCodeFormPro
 
           <button
             type="submit"
-            disabled={isLoading || code.length !== 6 || timeLeft <= 0}
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-500 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            disabled={isSubmitDisabled}
+            style={{
+              width: '100%',
+              background: isSubmitDisabled ? '#1e293b' : '#10b981',
+              color: isSubmitDisabled ? '#64748b' : '#ffffff',
+              fontWeight: 600,
+              padding: '12px 16px',
+              borderRadius: 8,
+              border: 'none',
+              cursor: isSubmitDisabled ? 'not-allowed' : 'pointer',
+              fontSize: '0.95rem',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+              transition: 'background 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              if (!isSubmitDisabled) e.currentTarget.style.background = '#059669';
+            }}
+            onMouseLeave={(e) => {
+              if (!isSubmitDisabled) e.currentTarget.style.background = '#10b981';
+            }}
           >
             {isLoading ? (
-              <span className="flex items-center justify-center">
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <svg
-                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  style={{
+                    width: 20,
+                    height: 20,
+                    marginRight: 12,
+                    animation: 'spin 1s linear infinite',
+                  }}
                   fill="none"
                   viewBox="0 0 24 24"
                 >
                   <circle
-                    className="opacity-25"
+                    style={{ opacity: 0.25 }}
                     cx="12"
                     cy="12"
                     r="10"
@@ -172,7 +292,7 @@ export function VerifyCodeForm({ email, onSuccess, onResend }: VerifyCodeFormPro
                     strokeWidth="4"
                   ></circle>
                   <path
-                    className="opacity-75"
+                    style={{ opacity: 0.75 }}
                     fill="currentColor"
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
@@ -185,20 +305,38 @@ export function VerifyCodeForm({ email, onSuccess, onResend }: VerifyCodeFormPro
           </button>
         </form>
 
-        <div className="mt-6 text-center space-y-3">
-          <p className="text-sm text-gray-600">¿No recibiste el código?</p>
+        <div style={{ marginTop: 24, textAlign: 'center' }}>
+          <p style={{ fontSize: '0.875rem', color: '#94a3b8', marginBottom: 12, marginTop: 0 }}>
+            ¿No recibiste el código?
+          </p>
           <button
             type="button"
             onClick={onResend}
             disabled={isLoading}
-            className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors disabled:text-gray-400 disabled:cursor-not-allowed"
+            style={{
+              fontSize: '0.875rem',
+              color: isLoading ? '#64748b' : '#10b981',
+              fontWeight: 500,
+              background: 'none',
+              border: 'none',
+              cursor: isLoading ? 'not-allowed' : 'pointer',
+              padding: 0,
+              transition: 'color 0.2s',
+            }}
           >
             Reenviar código
           </button>
-          <div>
+          <div style={{ marginTop: 12 }}>
             <a
               href="/login"
-              className="text-sm text-gray-600 hover:text-gray-700 transition-colors"
+              style={{
+                fontSize: '0.875rem',
+                color: '#94a3b8',
+                textDecoration: 'none',
+                transition: 'color 0.2s',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#e2e8f0')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = '#94a3b8')}
             >
               Volver al inicio de sesión
             </a>

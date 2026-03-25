@@ -25,6 +25,31 @@ const EXCEPTION_STATUS_MAP: Record<string, number> = {
   ExpiredResetCodeException: HttpStatus.BAD_REQUEST,
   PasswordMismatchException: HttpStatus.BAD_REQUEST,
   WeakPasswordException: HttpStatus.BAD_REQUEST,
+
+  // Accounts
+  AccountNotFoundException: HttpStatus.NOT_FOUND,
+  AccountHasActiveChildrenException: HttpStatus.CONFLICT,
+  AccountHasActiveDataException: HttpStatus.CONFLICT,
+  InvalidAccountDataException: HttpStatus.BAD_REQUEST,
+  AccountTypeChangeException: HttpStatus.BAD_REQUEST,
+  AccountCycleException: HttpStatus.BAD_REQUEST,
+
+  // Transactions
+  TransactionNotFoundException: HttpStatus.NOT_FOUND,
+  InvalidTransactionDataException: HttpStatus.BAD_REQUEST,
+  AccountNotMainException: HttpStatus.BAD_REQUEST,
+
+  // Debts
+  DebtNotFoundException: HttpStatus.NOT_FOUND,
+  InvalidDebtDataException: HttpStatus.BAD_REQUEST,
+  DebtNotPaidException: HttpStatus.CONFLICT,
+  PaymentExceedsRemainingException: HttpStatus.BAD_REQUEST,
+
+  // Installments
+  InstallmentNotFoundException: HttpStatus.NOT_FOUND,
+  InvalidInstallmentDataException: HttpStatus.BAD_REQUEST,
+  InstallmentNotFullyPaidException: HttpStatus.CONFLICT,
+  TooManyInstallmentsToPayException: HttpStatus.BAD_REQUEST,
 };
 
 @Catch(DomainException)

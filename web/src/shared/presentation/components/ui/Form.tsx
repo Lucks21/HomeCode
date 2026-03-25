@@ -18,24 +18,45 @@ export function FormField<
 
 export function FormItem({
   children,
-  className = '',
+  className,
+  style,
 }: {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
-  return <div className={`space-y-2 ${className}`}>{children}</div>;
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
 }
 
 export function FormLabel({
   children,
-  className = '',
+  className,
+  style,
 }: {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
     <label
-      className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`}
+      style={{
+        color: '#e2e8f0',
+        fontWeight: 500,
+        fontSize: 14,
+        lineHeight: 1,
+        ...style,
+      }}
     >
       {children}
     </label>
@@ -48,21 +69,48 @@ export function FormControl({ children }: { children: React.ReactNode }) {
 
 export function FormMessage({
   children,
-  className = '',
+  className,
+  style,
 }: {
   children?: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   if (!children) return null;
-  return <p className={`text-sm font-medium text-destructive ${className}`}>{children}</p>;
+  return (
+    <p
+      style={{
+        color: '#ef4444',
+        fontSize: 12,
+        fontWeight: 500,
+        margin: 0,
+        ...style,
+      }}
+    >
+      {children}
+    </p>
+  );
 }
 
 export function FormDescription({
   children,
-  className = '',
+  className,
+  style,
 }: {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
-  return <p className={`text-sm text-muted-foreground ${className}`}>{children}</p>;
+  return (
+    <p
+      style={{
+        color: '#64748b',
+        fontSize: 12,
+        margin: 0,
+        ...style,
+      }}
+    >
+      {children}
+    </p>
+  );
 }

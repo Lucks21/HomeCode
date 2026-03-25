@@ -36,6 +36,9 @@
     "schema": "prisma/schema.prisma"
   },
   "dependencies": {
+    "@capacitor/android": "^7.6.0",
+    "@capacitor/cli": "^7.6.0",
+    "@capacitor/core": "^7.6.0",
     "@hookform/resolvers": "^5.2.2",
     "@nestjs/common": "^11.1.17",
     "@nestjs/config": "^4.0.3",

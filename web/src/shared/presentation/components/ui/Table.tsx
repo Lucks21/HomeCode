@@ -1,21 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export function Table({
   children,
-  className = '',
+  className,
+  style,
 }: {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
-    <div className={`w-full overflow-auto ${className}`}>
-      <table className="w-full caption-bottom text-sm">{children}</table>
+    <div style={{ width: '100%', overflowX: 'auto', ...style }}>
+      <table
+        style={{
+          width: '100%',
+          borderCollapse: 'collapse',
+          fontSize: 14,
+        }}
+      >
+        {children}
+      </table>
     </div>
   );
 }
 
 export function TableHeader({ children }: { children: React.ReactNode }) {
-  return <thead className="border-b">{children}</thead>;
+  return (
+    <thead
+      style={{
+        background: '#0b0f19',
+      }}
+    >
+      {children}
+    </thead>
+  );
 }
 
 export function TableBody({ children }: { children: React.ReactNode }) {
@@ -24,26 +42,53 @@ export function TableBody({ children }: { children: React.ReactNode }) {
 
 export function TableRow({
   children,
-  className = '',
+  className,
+  style,
 }: {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
+  const [hovered, setHovered] = useState(false);
+
   return (
-    <tr className={`border-b transition-colors hover:bg-muted/50 ${className}`}>{children}</tr>
+    <tr
+      style={{
+        borderBottom: '1px solid #1e293b',
+        color: '#e2e8f0',
+        background: hovered ? 'rgba(255,255,255,0.03)' : 'transparent',
+        transition: 'background 0.1s',
+        ...style,
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {children}
+    </tr>
   );
 }
 
 export function TableHead({
   children,
-  className = '',
+  className,
+  style,
 }: {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
     <th
-      className={`h-12 px-4 text-left align-middle font-medium text-muted-foreground ${className}`}
+      style={{
+        height: 48,
+        padding: '0 16px',
+        textAlign: 'left',
+        verticalAlign: 'middle',
+        fontWeight: 500,
+        color: '#94a3b8',
+        borderBottom: '1px solid #1e293b',
+        ...style,
+      }}
     >
       {children}
     </th>
@@ -52,10 +97,23 @@ export function TableHead({
 
 export function TableCell({
   children,
-  className = '',
+  className,
+  style,
 }: {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
-  return <td className={`p-4 align-middle ${className}`}>{children}</td>;
+  return (
+    <td
+      style={{
+        padding: 16,
+        verticalAlign: 'middle',
+        color: '#e2e8f0',
+        ...style,
+      }}
+    >
+      {children}
+    </td>
+  );
 }
