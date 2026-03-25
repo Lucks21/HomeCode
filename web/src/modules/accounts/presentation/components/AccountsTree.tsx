@@ -76,14 +76,15 @@ function AccountCard({
           background: '#111827',
           border: `1px solid ${isHovered ? '#2d3748' : '#1e293b'}`,
           borderRadius: 12,
-          padding: 16,
+          padding: '12px 14px',
           display: 'flex',
           alignItems: 'center',
-          gap: 14,
+          gap: 10,
           cursor: 'pointer',
           transition: 'border-color 0.2s, filter 0.2s',
           filter: isHovered ? 'brightness(1.08)' : 'brightness(1)',
           opacity: account.archived ? 0.6 : 1,
+          flexWrap: 'wrap',
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}

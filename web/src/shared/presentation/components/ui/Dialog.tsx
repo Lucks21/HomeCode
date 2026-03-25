@@ -16,11 +16,14 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 50,
+        zIndex: 200,
         display: 'flex',
         alignItems: isMobile ? 'flex-start' : 'center',
         justifyContent: 'center',
-        padding: isMobile ? '12px' : '16px',
+        padding: isMobile ? '16px' : '16px',
+        paddingTop: isMobile
+          ? 'max(16px, env(safe-area-inset-top, 16px))'
+          : '16px',
       }}
     >
       <div
@@ -31,7 +34,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
         }}
         onClick={() => onOpenChange?.(false)}
       />
-      <div style={{ position: 'relative', zIndex: 50 }}>{children}</div>
+      <div style={{ position: 'relative', zIndex: 200, width: '100%', maxWidth: 512 }}>{children}</div>
     </div>
   );
 }

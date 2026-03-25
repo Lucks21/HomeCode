@@ -269,14 +269,14 @@ function SortableCard({
 // --- Individual card renderers ---
 function IngresosCard({ value, loading, bg }: { value: number; loading: boolean; bg: string | null }) {
   return (
-    <div style={{ borderRadius: 16, padding: 24, display: 'flex', flexDirection: 'column', gap: 12, background: bg ?? 'linear-gradient(135deg, #065f46, #047857)', height: '100%' }}>
+    <div style={{ borderRadius: 16, padding: 24, display: 'flex', flexDirection: 'column', gap: 12, background: bg ?? 'linear-gradient(135deg, #065f46, #047857)', height: '100%', overflow: 'hidden' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ color: '#a7f3d0', fontSize: '0.85rem', fontWeight: 500 }}>Ingresos del Mes</span>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <TrendingUp size={18} color="#a7f3d0" />
         </div>
       </div>
-      <span style={{ fontSize: '1.8rem', fontWeight: 700, color: '#ffffff' }}>
+      <span style={{ fontSize: 'clamp(1.1rem, 5vw, 1.8rem)', fontWeight: 700, color: '#ffffff', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
         {loading ? '...' : formatCLP(value)}
       </span>
     </div>
@@ -285,14 +285,14 @@ function IngresosCard({ value, loading, bg }: { value: number; loading: boolean;
 
 function GastosCard({ value, loading, bg }: { value: number; loading: boolean; bg: string | null }) {
   return (
-    <div style={{ borderRadius: 16, padding: 24, display: 'flex', flexDirection: 'column', gap: 12, background: bg ?? 'linear-gradient(135deg, #7f1d1d, #991b1b)', height: '100%' }}>
+    <div style={{ borderRadius: 16, padding: 24, display: 'flex', flexDirection: 'column', gap: 12, background: bg ?? 'linear-gradient(135deg, #7f1d1d, #991b1b)', height: '100%', overflow: 'hidden' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ color: '#fca5a5', fontSize: '0.85rem', fontWeight: 500 }}>Gastos del Mes</span>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <TrendingDown size={18} color="#fca5a5" />
         </div>
       </div>
-      <span style={{ fontSize: '1.8rem', fontWeight: 700, color: '#ffffff' }}>
+      <span style={{ fontSize: 'clamp(1.1rem, 5vw, 1.8rem)', fontWeight: 700, color: '#ffffff', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
         {loading ? '...' : formatCLP(value)}
       </span>
     </div>
@@ -301,14 +301,14 @@ function GastosCard({ value, loading, bg }: { value: number; loading: boolean; b
 
 function BalanceCard({ value, loading, bg }: { value: number; loading: boolean; bg: string | null }) {
   return (
-    <div style={{ borderRadius: 16, padding: 24, display: 'flex', flexDirection: 'column', gap: 12, background: bg ?? 'linear-gradient(135deg, #1e3a5f, #2563eb)', height: '100%' }}>
+    <div style={{ borderRadius: 16, padding: 24, display: 'flex', flexDirection: 'column', gap: 12, background: bg ?? 'linear-gradient(135deg, #1e3a5f, #2563eb)', height: '100%', overflow: 'hidden' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ color: '#93c5fd', fontSize: '0.85rem', fontWeight: 500 }}>Balance del Mes</span>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <DollarSign size={18} color="#93c5fd" />
         </div>
       </div>
-      <span style={{ fontSize: '1.8rem', fontWeight: 700, color: '#ffffff' }}>
+      <span style={{ fontSize: 'clamp(1.1rem, 5vw, 1.8rem)', fontWeight: 700, color: '#ffffff', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
         {loading ? '...' : formatCLP(value)}
       </span>
     </div>
