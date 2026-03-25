@@ -15,13 +15,27 @@ export function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [connectionStatus, setConnectionStatus] = useState<string | null>(null);
+  const [loginStatus, setLoginStatus] = useState<string | null>(null);
   const [isCheckingConnection, setIsCheckingConnection] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const form = e.currentTarget as HTMLFormElement;
+    const formData = new FormData(form);
+    const submittedEmail = String(formData.get('email') ?? '').trim();
+    const submittedPassword = String(formData.get('password') ?? '');
+
+    setLoginStatus(`Intentando login contra ${apiBaseUrl} con ${submittedEmail || '(sin email)'}`);
+
+    if (!submittedEmail || !submittedPassword) {
+      setLoginStatus('Faltan email o contraseña en el formulario');
+      return;
+    }
+
     try {
-      await login({ email, password });
+      await login({ email: submittedEmail, password: submittedPassword });
+      setLoginStatus('Login OK. Redirigiendo...');
 
       // Establecer cookies manualmente para que el middleware las vea inmediatamente
       const accessToken = localStorage.getItem('access_token');
@@ -38,8 +52,9 @@ export function LoginForm() {
 
       // Usar window.location para forzar recarga y que el middleware vea las cookies
       window.location.href = '/dashboard';
-    } catch {
-      // El error ya está manejado por el hook.
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Error desconocido al iniciar sesión';
+      setLoginStatus(`Login falló: ${errorMessage}`);
     }
   };
 
@@ -73,6 +88,7 @@ export function LoginForm() {
           </label>
           <input
             id="email"
+            name="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -90,6 +106,7 @@ export function LoginForm() {
           </label>
           <input
             id="password"
+            name="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -103,8 +120,9 @@ export function LoginForm() {
 
         {error && <p className={styles.error}>{error}</p>}
         {connectionStatus && <p className={styles.status}>{connectionStatus}</p>}
+        {loginStatus && <p className={styles.status}>{loginStatus}</p>}
 
-        <button type="submit" disabled={isLoading || !email || !password} className={styles.submit}>
+        <button type="submit" disabled={isLoading} className={styles.submit}>
           {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
         </button>
 

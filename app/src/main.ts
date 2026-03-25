@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import type { NextFunction, Request, Response } from 'express';
 import { AppModule } from './app.module';
 import { DomainExceptionFilter } from './shared/infrastructure/filters/DomainExceptionFilter';
 
@@ -32,6 +33,17 @@ async function bootstrap() {
   // CORS
   app.enableCors({
     origin: '*',
+  });
+
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const startedAt = Date.now();
+
+    res.on('finish', () => {
+      const durationMs = Date.now() - startedAt;
+      console.log(`[HTTP] ${req.method} ${req.originalUrl} -> ${res.statusCode} (${durationMs}ms)`);
+    });
+
+    next();
   });
 
   const port = process.env['PORT'] ?? 3000;
