@@ -1,11 +1,11 @@
 # Dependencies
 node_modules/
-package-lock.json
 
 # Environment variables
 .env
 .env.local
 .env.*.local
+android/keystore.properties
 
 # Build output
 dist/
@@ -48,3 +48,5 @@ coverage/
 *.tmp
 *.temp
 .cache/
+android/**/*.jks
+android/**/*.keystore
