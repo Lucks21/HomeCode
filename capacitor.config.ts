@@ -8,6 +8,11 @@ const config: CapacitorConfig = {
     cleartext: true,
     allowNavigation: ['174.138.65.46'],
   },
+  plugins: {
+    CapacitorHttp: {
+      enabled: true,
+    },
+  },
 };
 
 export default config;
