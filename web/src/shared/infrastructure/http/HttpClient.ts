@@ -102,8 +102,10 @@ export class HttpClient {
 
       if (!response.ok) return false;
 
-      const data = (await response.json()) as { data?: { accessToken?: string } };
-      const newAccessToken = data?.data?.accessToken;
+      const data = (await response.json()) as {
+        data?: { accessToken?: string; access_token?: string };
+      };
+      const newAccessToken = data?.data?.accessToken ?? data?.data?.access_token;
       if (newAccessToken) {
         localStorage.setItem('access_token', newAccessToken);
         return true;
@@ -124,6 +126,14 @@ export class HttpClient {
       this.refreshPromise = null;
     });
     return this.refreshPromise;
+  }
+
+  private shouldHandleUnauthorizedWithRefresh(path: string, token: string | null): boolean {
+    if (!token) {
+      return false;
+    }
+
+    return path !== '/auth/login' && path !== '/auth/refresh';
   }
 
   private async request<T>(
@@ -148,7 +158,13 @@ export class HttpClient {
       });
 
     if (!response.ok) {
-      if (response.status === 401 && typeof window !== 'undefined' && !isRetry) {
+      const shouldTryRefresh =
+        response.status === 401 &&
+        typeof window !== 'undefined' &&
+        !isRetry &&
+        this.shouldHandleUnauthorizedWithRefresh(path, token);
+
+      if (shouldTryRefresh) {
         const refreshed = await this.handleRefresh();
         if (refreshed) {
           return this.request<T>(path, options, config, true);
@@ -159,7 +175,13 @@ export class HttpClient {
         throw new Error('Sesión expirada');
       }
 
-      if (response.status === 401 && typeof window !== 'undefined' && isRetry) {
+      const shouldExpireSession =
+        response.status === 401 &&
+        typeof window !== 'undefined' &&
+        isRetry &&
+        this.shouldHandleUnauthorizedWithRefresh(path, token);
+
+      if (shouldExpireSession) {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         window.location.href = '/login';
