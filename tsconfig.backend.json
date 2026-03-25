@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "declaration": false,
+    "declarationMap": false
+  },
+  "include": ["app/src/**/*"],
+  "exclude": ["node_modules", "dist", "web", "src", "android"]
+}

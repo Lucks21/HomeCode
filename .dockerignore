@@ -1,0 +1,15 @@
+node_modules
+npm-debug.log
+dist
+.git
+.gitignore
+.next
+web
+android
+docs
+.env
+.env.*
+!.env.docker.example
+coverage
+*.tsbuildinfo
+*.log

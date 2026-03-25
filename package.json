@@ -17,8 +17,10 @@
   "scripts": {
     "dev": "nodemon --exec ts-node src/index.ts",
     "build": "tsc",
+    "build:backend": "tsc -p tsconfig.backend.json",
     "start": "node dist/index.js",
     "start:dev": "nodemon",
+    "start:backend": "node dist/app/src/main.js",
     "start:prod": "node dist/app/src/main.js",
     "dev:all": "concurrently -k -n API,WEB -c yellow,cyan \"cross-env PORT=4010 npm run start:dev\" \"cross-env NEXT_PUBLIC_API_URL=http://localhost:4010 next dev ./web -p 4011\"",
     "web:dev": "next dev ./web -p 3003",
@@ -26,6 +28,7 @@
     "web:start": "next start ./web -p 3003",
     "db:generate": "prisma generate --schema prisma/schema.prisma",
     "db:migrate": "prisma migrate dev --schema prisma/schema.prisma",
+    "db:migrate:deploy": "prisma migrate deploy --schema prisma/schema.prisma",
     "db:seed": "ts-node prisma/seed.ts",
     "format": "prettier --write \"{app,web,prisma,src}/**/*.{ts,tsx,js,jsx,json,md,yml,yaml,css,scss}\" \"*.{json,md,yml,yaml}\"",
     "format:check": "prettier --check \"{app,web,prisma,src}/**/*.{ts,tsx,js,jsx,json,md,yml,yaml,css,scss}\" \"*.{json,md,yml,yaml}\"",
