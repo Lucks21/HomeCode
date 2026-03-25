@@ -44,7 +44,7 @@ export function AccountDetailCard({ detail }: AccountDetailCardProps) {
         }}
       >
         {/* Header: nombre + badges */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
           <h2 style={{ fontSize: 24, fontWeight: 700, color: '#f1f5f9', margin: 0 }}>
             {detail.name}
           </h2>

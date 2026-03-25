@@ -69,13 +69,8 @@ export function DebtsTable({ debts, accounts, onViewDetail, onRegisterPayment, o
   }
 
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
-        gap: 20,
-      }}
-    >
+    <div className="grid-cards-2">
+
       {debts.map((debt) => {
         const status = statusStyles[debt.status] ?? statusStyles.PENDING;
         const paid = debt.amount - debt.remainingAmount;

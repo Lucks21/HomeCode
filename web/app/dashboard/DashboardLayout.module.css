@@ -15,11 +15,11 @@
 @media (max-width: 768px) {
   .shell {
     display: block;
-    padding-bottom: 84px;
+    padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
   }
 
   .content {
     margin-left: 0;
-    padding: 16px 16px 100px;
+    padding: 16px 16px calc(100px + env(safe-area-inset-bottom, 0px));
   }
 }

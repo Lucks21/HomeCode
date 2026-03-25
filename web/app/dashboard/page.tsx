@@ -518,14 +518,8 @@ export default function DashboardPage() {
         onDragEnd={handleDragEnd}
       >
         <SortableContext items={visibleCards} strategy={rectSortingStrategy}>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '16px',
-              alignItems: 'stretch',
-            }}
-          >
+          <div className="grid-cards-3">
+
             {visibleCards.map((id) => {
               const content = renderCard(id);
               if (!content) return null;

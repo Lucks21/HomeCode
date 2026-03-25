@@ -55,11 +55,8 @@ export function InstallmentsTable({
   }
 
   return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(2, 1fr)',
-      gap: 20,
-    }}>
+    <div className="grid-cards-2">
+
       {installments.map((inst) => {
         const paidCount = inst.paidCount ?? 0;
         const total = inst.totalInstallments;

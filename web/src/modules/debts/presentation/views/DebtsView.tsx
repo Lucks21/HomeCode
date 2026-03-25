@@ -220,6 +220,8 @@ export function DebtsView() {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 12,
           marginBottom: 24,
         }}
       >
@@ -268,7 +270,7 @@ export function DebtsView() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
             gap: 12,
             alignItems: 'end',
           }}

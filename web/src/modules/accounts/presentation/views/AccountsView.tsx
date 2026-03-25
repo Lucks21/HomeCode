@@ -184,6 +184,8 @@ export function AccountsView() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 12,
           marginBottom: 24,
         }}
       >
@@ -265,7 +267,7 @@ export function AccountsView() {
           borderRadius: 12,
         }}
       >
-        <div style={{ flex: 1, minWidth: 200, position: 'relative' }}>
+        <div style={{ flex: 1, minWidth: 140, position: 'relative' }}>
           <Search
             size={16}
             style={{
@@ -301,7 +303,7 @@ export function AccountsView() {
           />
         </div>
 
-        <div style={{ width: 200 }}>
+        <div style={{ width: 200, minWidth: 0 }}>
           <Select
             value={filters.type}
             onValueChange={(val) =>

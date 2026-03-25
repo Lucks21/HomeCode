@@ -143,7 +143,7 @@ export function InstallmentsView() {
             Inicio: {new Date(installmentDetail.startDate).toLocaleDateString('es-CL')}
           </p>
 
-          <div style={{ display: 'flex', gap: 32, marginBottom: 20 }}>
+          <div className="flex-stats-row" style={{ marginBottom: 20 }}>
             <div>
               <p style={{ color: '#94a3b8', fontSize: 13, marginBottom: 4 }}>Monto Total</p>
               <p style={{ color: '#f1f5f9', fontWeight: 600, fontSize: 18, margin: 0 }}>
@@ -297,6 +297,8 @@ export function InstallmentsView() {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 12,
         marginBottom: 24,
       }}>
         <div>
